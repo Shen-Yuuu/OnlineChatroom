@@ -6,7 +6,7 @@
         VALUES (#{groupName}, #{ownerId})
     </insert>
 
-    <select id="getGroupsByUserId" resultType="com.example.java_chatroom.model.Group">
+    <select id="selectByUserId" resultType="com.example.java_chatroom.model.Group">
         SELECT g.groupId, g.groupName, g.ownerId
         FROM `group` g
                  JOIN groupusers gu ON g.groupId = gu.groupId
