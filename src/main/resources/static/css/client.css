@@ -344,6 +344,14 @@
     align-items: center;
 }
 
+/* 可选：添加图标 */
+.main .right .title .userinfo-button::before {
+    content: "👤";
+    margin-right: 6px;
+    font-size: 16px;
+}
+
+
 #add-friend-button {
     background-color: #4CAF50;
     color: white;
@@ -356,6 +364,7 @@
 #add-friend-button:hover {
     background-color: #45a049;
 }
+
 
 .delete-friend-btn {
     margin-left: 10px;
@@ -370,4 +379,44 @@
 
 .delete-friend-btn:hover {
     background-color: #d32f2f;
+
+.add-friend-container {
+    padding: 10px;
+    text-align: center;
+}
+
+#show-search-button {
+    width: 100%;
+    padding: 8px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#show-search-button:hover {
+    background-color: #45a049;
+}
+
+.friend-list-header {
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.friend-search {
+    width: 100%;
+}
+.friend-search input {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.hidden-friend {
+    display: none;
+}
+.hidden-item {
+    display: none;
+
 }

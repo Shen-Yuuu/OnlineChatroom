@@ -19,10 +19,15 @@
             <div class="left">
                 <!-- 当前登录用户的用户名 -->
                 <div class="user">
-                    
+
                 </div>
-                <!-- 这是搜索框 -->
-                <div class="search">
+                <!-- 添加好友按钮 -->
+                <div class="add-friend-container">
+                    <button id="show-search-button">添加好友</button>
+                </div>
+
+                <!-- 搜索框区域 - 默认隐藏 -->
+                <div class="search" style="display: none;">
                     <!-- 搜索框中的输入框 -->
                     <input type="text" id="search-input" placeholder="输入用户ID搜索">
                     <!-- 点击按钮进行搜索 -->
@@ -43,6 +48,13 @@
                     <!-- 好友列表标签 -->
                     <div class="tab-friend"></div>
                 </div>
+
+                <div class="friend-list-header">
+                    <div class="friend-search">
+                        <input type="text" id="friend-search-input" placeholder="搜索好友">
+                    </div>
+                </div>
+
                 <!-- 会话列表 -->
                 <ul class="list" id="session-list">
                     <li>
@@ -70,6 +82,7 @@
                         <p>晚上吃啥</p>
                     </li>
                 </ul>
+
                 <!-- 好友列表 -->
                 <ul class="list hide" id="friend-list">
                     <li>
@@ -90,12 +103,16 @@
                 </ul>
 
             </div>
+
+
+
             <!-- 右侧区域, 显示聊天编辑框 -->
             <div class="right">
                 <!-- 会话标题 -->
                 <div class="title">
+                    <button id="userinfo-link" class="history-button">个人信息</button>
                     <span class="session-title">请选择一个会话</span>
-                    <a href="history.html" id="history-link" class="history-button" target="_blank">查看所有聊天记录</a>
+                    <button id="history-link" class="history-button">查看聊天记录</button>
                 </div>
                 <!-- 消息区 -->
                 <div class="message-show">

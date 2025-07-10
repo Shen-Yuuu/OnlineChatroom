@@ -6,6 +6,10 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="userId">
-        insert into user values(null, #{username}, #{password})
+        insert into user values(null, #{username}, #{password},#{gender}, #{description})
     </insert>
+
+    <update id="updateById" useGeneratedKeys="true" keyProperty="userId">
+        update user set username = #{username}, password = #{password},description=#{description} where userId = #{userId}
+    </update>
 </mapper>

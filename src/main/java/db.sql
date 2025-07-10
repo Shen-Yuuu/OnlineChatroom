@@ -10,9 +10,17 @@ CREATE TABLE `user`  (
   `userId` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `gender`int,
+  `description`text,
   PRIMARY KEY (`userId`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+
+insert into user values(1, '张三', '123', 1, '我是张三');
+insert into user values(2, '李四', '123', 1, '我是李四');
+insert into user values(3, '王五', '123', 0, '我是王五');
+insert into user values(4, '赵六', '123', 0, '我是赵六');
+insert into user values(5, '124321', '23232', 1, 'usdgs');
 
 -- ----------------------------
 -- Table structure for friend
@@ -64,7 +72,7 @@ CREATE TABLE `message` (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, '张三', '123'), (2, '李四', '123'), (3, '王五', '123'), (4, '赵六', '123');
+-- INSERT INTO `user` VALUES (1, '张三', '123'), (2, '李四', '123'), (3, '王五', '123'), (4, '赵六', '123');
 
 -- ----------------------------
 -- Records of friend

@@ -233,11 +233,27 @@ function getFriendList() {
                     clickFriend(friend);
                 }
             }
+            applyFriendSearch();
         },
         error: function() {
             console.log('获取好友列表失败!');
         }
     });
+}
+
+// 实现搜索过滤功能
+function applyFriendSearch() {
+    const searchText = $('#friend-search-input').val().toLowerCase();
+    if (searchText !== '') {
+        $('#friend-list li').each(function() {
+            const friendName = $(this).find('h4').text().toLowerCase();
+            if (friendName.includes(searchText)) {
+                $(this).removeClass('hidden-friend');
+            } else {
+                $(this).addClass('hidden-friend');
+            }
+        });
+    }
 }
 
 getFriendList();
@@ -294,7 +310,8 @@ function clickSession(currentLi) {
 function updateHistoryButtonLink(sessionId) {
     const historyButton = document.getElementById('history-link');
     if (historyButton && sessionId) {
-        historyButton.href = 'history.html?sessionId=' + sessionId;
+        // 不再设置href属性，而是存储sessionId到data属性
+        $(historyButton).data('sessionId', sessionId);
         historyButton.style.display = 'inline-block';
     }
 }
@@ -440,6 +457,35 @@ function createSession(friendId, sessionLi) {
 
 
 $(function() {
+
+    // 点击"添加好友"按钮时，显示搜索框
+    $("#show-search-button").click(function() {
+        $(".search").show();
+        $("#show-search-button").parent().hide(); // 隐藏添加好友按钮
+    });
+
+    $('#history-link').on('click', function() {
+        const sessionId = $(this).data('sessionId');
+        if (sessionId) {
+            // 在新窗口打开聊天记录页面
+            window.open('history.html?sessionId=' + sessionId, '_blank');
+        } else {
+            // 如果没有sessionId，仍然打开聊天记录页面
+            window.open('history.html', '_blank');
+        }
+    });
+
+    $('#userinfo-link').on('click', function() {
+        const sessionId = $(this).data('sessionId');
+        if (sessionId) {
+            // 在新窗口打开聊天记录页面
+            window.open('userinfo.html?sessionId=' + sessionId, '_blank');
+        } else {
+            // 如果没有sessionId，仍然打开聊天记录页面
+            window.open('userinfo.html', '_blank');
+        }
+    });
+
     // 用于存储搜索到的好友ID
     let searchedFriendId = null;
 
@@ -486,7 +532,7 @@ $(function() {
                 if (response.success) {
                     alert(response.message);
                     // 添加成功后可以隐藏搜索结果区域
-                    $('#search-result').hide();
+                    resetSearchArea();
                     getFriendList();
                 } else {
                     alert('添加失败: ' + response.message);
@@ -498,8 +544,76 @@ $(function() {
         });
     });
 
-});
+    let currentListType = 'session'; // 'session' 或 'friend'
 
+    // 监听标签页切换，更新当前列表类型
+    $('.tab-session').click(function() {
+        currentListType = 'session';
+        updateSearchPlaceholder();
+        $('#friend-search-input').val('');
+        $('#session-list li').removeClass('hidden-item');
+    });
+
+    $('.tab-friend').click(function() {
+        currentListType = 'friend';
+        updateSearchPlaceholder();
+        $('#friend-search-input').val('');
+        $('#session-list li').removeClass('hidden-item');
+
+    });
+
+    // 更新搜索框的提示文本
+    function updateSearchPlaceholder() {
+        if (currentListType === 'session') {
+            $('#friend-search-input').attr('placeholder', '搜索会话');
+        } else {
+            $('#friend-search-input').attr('placeholder', '搜索好友');
+        }
+    }
+
+    // 搜索功能 - 处理输入事件
+    $('#friend-search-input').on('input', function() {
+        const searchText = $(this).val().toLowerCase();
+
+        if (currentListType === 'session') {
+            // 搜索会话列表
+            $('#session-list li').each(function() {
+                const sessionName = $(this).find('h3').text().toLowerCase();
+                const messagePreview = $(this).find('p').text().toLowerCase();
+
+                if (sessionName.includes(searchText) || messagePreview.includes(searchText)) {
+                    $(this).removeClass('hidden-item');
+                } else {
+                    $(this).addClass('hidden-item');
+                }
+            });
+        } else {
+            // 搜索好友列表
+            $('#friend-list li').each(function() {
+                const friendName = $(this).find('h4').text().toLowerCase();
+
+                if (friendName.includes(searchText)) {
+                    $(this).removeClass('hidden-item');
+                } else {
+                    $(this).addClass('hidden-item');
+                }
+            });
+        }
+    });
+
+    // 初始化搜索框提示文本
+    updateSearchPlaceholder();
+
+    // 添加好友成功后或取消搜索时，可以添加返回的代码
+    function resetSearchArea() {
+        $(".search").hide();
+        $(".search-result").hide();
+        $("#search-input").val(""); // 清空搜索框
+        $(".add-friend-container").show(); // 显示添加好友按钮
+    }
+
+
+});
 
 function deleteFriend(friendId) {
     $.ajax({
@@ -525,7 +639,4 @@ function deleteFriend(friendId) {
         }
     });
 }
-
-
-
 

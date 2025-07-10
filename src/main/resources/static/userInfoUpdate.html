@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改个人信息</title>
+    <script src="./js/vue.js"></script>
+    <script src="./js/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            color: #3498db;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+
+        .header::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        .content-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .update-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .update-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 40px;
+            color: #3498db;
+            font-size: 18px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .form-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        textarea.form-input {
+            min-height: 120px;
+            padding-left: 15px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-item input {
+            width: 18px;
+            height: 18px;
+            accent-color: #3498db;
+        }
+
+        .gender-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .male-icon {
+            background-color: #3498db;
+        }
+
+        .female-icon {
+            background-color: #e84393;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f1f1f1;
+            color: #2c3e50;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .user-avatar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="update-app">
+    <div class="header">
+        <h1>修改个人信息</h1>
+    </div>
+
+    <div class="content-container">
+        <div v-if="loading" class="loading">
+            <div class="spinner"></div>
+        </div>
+
+        <div v-else class="update-card">
+            <div class="card-header">
+                <h2>编辑您的个人资料</h2>
+            </div>
+
+            <div class="form-container">
+                <div class="user-avatar">
+                    <div class="avatar-circle">
+                        {{ user.username.charAt(0) }}
+                    </div>
+                </div>
+
+                <form @submit.prevent="submitForm">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <div class="input-icon">👤</div>
+                        <input
+                                type="text"
+                                id="username"
+                                class="form-input"
+                                placeholder="请输入用户名"
+                                v-model="user.username"
+                                required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userpassword">密码</label>
+                        <div class="input-icon">👤</div>
+                        <input
+                                type="text"
+                                id="userpassword"
+                                class="form-input"
+                                placeholder="请输入密码"
+                                v-model="user.password"
+                                required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>性别</label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input
+                                        type="radio"
+                                        value="1"
+                                        v-model="user.gender"
+                                >
+                                <span class="gender-icon male-icon"></span> 男
+                            </label>
+                            <label class="radio-item">
+                                <input
+                                        type="radio"
+                                        value="0"
+                                        v-model="user.gender"
+                                >
+                                <span class="gender-icon female-icon"></span> 女
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">个性签名</label>
+                        <textarea
+                                id="description"
+                                class="form-input"
+                                placeholder="分享您的个性宣言..."
+                                v-model="user.description"
+                        ></textarea>
+                    </div>
+
+                    <div class="status-message" :class="statusClass">{{ statusMessage }}</div>
+
+                    <div class="btn-group">
+                        <button
+                                type="submit"
+                                class="btn btn-primary"
+                                :disabled="submitting"
+                        >
+                            <span v-if="submitting">保存中...</span>
+                            <span v-else>保存更改</span>
+                        </button>
+                        <button
+                                type="button"
+                                class="btn btn-secondary"
+                                @click="goBack"
+                        >
+                            返回
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    new Vue({
+        el: "#update-app",
+        data: {
+            user: {
+                userId: null,
+                username: "",
+                gender: "1", // 默认选中男性
+                description: "",
+                password:""
+            },
+            loading: true,
+            submitting: false,
+            statusMessage: "",
+            statusClass: ""
+        },
+        created() {
+            this.loadUserData();
+        },
+        methods: {
+            // 从URL参数获取用户ID
+            getUserIdFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('userId');
+            },
+
+            // 加载用户数据
+            loadUserData() {
+                const userId = this.getUserIdFromUrl();
+                if (!userId) {
+                    this.showError("未获取到用户ID");
+                    return;
+                }
+
+                // 模拟API响应
+                setTimeout(() => {
+
+                    const mockUserData = {
+                        userId: 0,
+                        username: "",
+                        gender: 1,
+                        description: "",
+                        password:""
+                    };
+
+                    axios.get('/userInfo1').then((response) => {
+                        console.log(response)
+                        if (response!=null) {
+                            console.log(response.data.data)
+                            mockUserData.userId = response.data.userId
+                            mockUserData.username = response.data.username
+                            mockUserData.gender = response.data.gender
+                            mockUserData.description = response.data.description
+                            mockUserData.password = response.data.password
+
+                        }
+                        this.user = {
+                            ...mockUserData,
+                            // 将数值型gender转换为字符串型
+                            gender: mockUserData.gender.toString()
+                        };
+
+                        this.loading = false;
+
+                    })
+
+
+
+                }, 100);
+            },
+
+            // 提交表单
+            submitForm() {
+                this.submitting = true;
+                this.clearStatus();
+
+                // 简单验证
+                if (!this.user.username.trim()) {
+                    this.showError("用户名不能为空");
+                    this.submitting = false;
+                    return;
+                }
+
+                if (!this.user.password.trim()) {
+                    this.showError("密码不能为空");
+                    this.submitting = false;
+                    return;
+                }
+
+                if (this.user.username.length > 20) {
+                    this.showError("用户名不能超过20个字符");
+                    this.submitting = false;
+                    return;
+                }
+
+                // 转换为数值型
+                const submitData = {
+                    ...this.user,
+                    gender: parseInt(this.user.gender)
+                };
+
+                // 实际应该使用:
+                axios.post('/updateUser', submitData).then((response) => {
+                    console.log(response)
+                    if(response!=null||response!=="") {
+                        setTimeout(() => {
+                            console.log("提交数据:", submitData);
+                            this.submitting = false;
+                            this.showSuccess("个人信息更新成功！");
+
+                            // 3秒后跳转回个人信息页
+                            setTimeout(() => {
+                                this.goToProfile();
+                            }, 1000);
+                        }, 1500);
+                    }else{
+                        this.showError("个人信息更新失败");
+                    }
+                })
+
+            },
+
+            // 显示成功消息
+            showSuccess(message) {
+                this.statusMessage = message;
+                this.statusClass = "success";
+            },
+
+            // 显示错误消息
+            showError(message) {
+                this.statusMessage = message;
+                this.statusClass = "error";
+            },
+
+            // 清除状态消息
+            clearStatus() {
+                this.statusMessage = "";
+                this.statusClass = "";
+            },
+
+            // 返回个人信息页
+            goToProfile() {
+                window.location.href = `userInfo.html?userId=${this.user.userId}`;
+            },
+
+            // 返回上一页
+            goBack() {
+                window.history.back();
+            }
+        }
+    });
+</script>
+</body>
+</html>
