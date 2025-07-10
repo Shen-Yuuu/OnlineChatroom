@@ -85,3 +85,10 @@ INSERT INTO `message_session_user` (`id`, `sessionId`, `userId`) VALUES (1, 1, 2
 -- Records of message
 -- ----------------------------
 INSERT INTO `message` (`messageId`, `sessionId`, `fromId`, `content`, `createTime`) VALUES (1, 1, 1, '今晚吃啥', '2026-05-01 17:00:00'), (2, 2, 1, '随便', '2026-05-01 17:01:00'), (3, 1, 1, '那吃面?', '2026-05-01 17:02:00'), (4, 2, 1, '不想吃', '2026-05-01 17:03:00'), (5, 1, 1, '那你想吃啥', '2026-05-01 17:04:00'), (6, 2, 1, '随便', '2026-05-01 17:05:00'), (11, 1, 1, '那吃米饭炒菜?', '2026-05-01 17:06:00'), (8, 2, 1, '不想吃', '2026-05-01 17:07:00'), (9, 1, 1, '那你想吃啥?', '2026-05-01 17:08:00'), (10, 2, 1, '随便', '2026-05-01 17:09:00'), (7, 1, 2, '晚上一起约?', '2026-05-02 12:00:00');
+
+
+ALTER TABLE message ADD INDEX idx_sessionId (sessionId);
+ALTER TABLE message ADD INDEX idx_fromId (fromId);
+ALTER TABLE message ADD INDEX idx_createTime (createTime);
+ALTER TABLE message_session_user ADD INDEX idx_userId (userId);
+ALTER TABLE message_session_user ADD INDEX idx_sessionId (sessionId)

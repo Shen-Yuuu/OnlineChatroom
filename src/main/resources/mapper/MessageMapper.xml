@@ -34,18 +34,22 @@
     </select>
 
     <select id="selectHistoryForUser" resultType="com.example.java_chatroom.model.Message">
-        select
-            m.messageId, m.sessionId, m.fromId, u.username as fromName, m.content, m.createTime
-        from
-            message m
-        join
-            user u on m.fromId = u.userId
-        where
-            m.sessionId in (select sessionId from message_session_user where userId = #{userId})
-            <if test="query != null and query != ''">
-                and m.content like concat('%', #{query}, '%')
-            </if>
-        order by
-            m.createTime desc
+        SELECT
+        m.messageId, m.sessionId, m.fromId, u.username as fromName,
+        m.content, m.createTime
+        FROM
+        message_session_user msu
+        JOIN
+        message m ON m.sessionId = msu.sessionId
+        JOIN
+        user u ON m.fromId = u.userId
+        WHERE
+        msu.userId = #{userId}
+        <if test="query != null and query != ''">
+            AND m.content like concat('%', #{query}, '%')
+        </if>
+        ORDER BY
+        m.createTime DESC
+        LIMIT 50
     </select>
 </mapper>
