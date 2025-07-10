@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>朋友圈</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .post-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .post-box textarea {
+            width: 100%;
+            resize: none;
+            height: 80px;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .post-box button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+            font-size: 15px;
+        }
+
+        .post-box button:hover {
+            background-color: #45a049;
+        }
+
+        .moment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .moment-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #4caf50;
+        }
+
+        .moment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .username {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .moment-content {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .moment-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .like-btn {
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .like-btn:hover {
+            background-color: #d5d5d5;
+        }
+
+        .like-btn.liked {
+            background-color: #ff4081;
+            color: white;
+        }
+
+        .like-count {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .comment-section {
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+        }
+
+        .comment-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            margin-bottom: 12px;
+        }
+
+        .comment-list li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .comment-username {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .comment-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .comment-box input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .comment-box button {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .comment-box button:hover {
+            background-color: #1976d2;
+        }
+
+        @media (max-width: 600px) {
+            .post-box button {
+                float: none;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="post-box">
+        <textarea id="content" placeholder="分享你此刻的想法..."></textarea>
+        <button onclick="sendMoment()">发布</button>
+    </div>
+
+    <div class="moment-list" id="moment-list">
+        <!-- 动态内容将通过JavaScript填充 -->
+    </div>
+</div>
+
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script src="js/moment.js"></script>
+</body>
+</html>
