@@ -11,4 +11,6 @@ public interface MomentMapper {
     List<Moment> selectAllMoments();
     Moment selectMomentById(@Param("id") Long id);
     List<Moment> selectMomentsByUserId(@Param("userId") Long userId);
+
+    List<Moment> selectAllMomentsByFriend(int userId);
 }

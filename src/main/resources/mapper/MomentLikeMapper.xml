@@ -15,8 +15,23 @@
         SELECT COUNT(*) FROM moment_like WHERE moment_id = #{momentId}
     </select>
     <!-- 根据动态ID查询所有的点赞记录 -->
+    <select id="selectAllMoments" resultType="com.example.java_chatroom.model.Moment">
+        SELECT m.id, m.user_id AS userId, u.username, m.content, m.create_time AS createTime,
+               (SELECT COUNT(*) FROM moment_like WHERE moment_id = m.id) AS likeCount,
+               (SELECT COUNT(*) > 0 FROM moment_like WHERE moment_id = m.id AND user_id = #{userId}) AS likedByCurrentUser
+        FROM moment m
+                 JOIN user u ON m.user_id = u.userId
+        ORDER BY m.create_time DESC
+    </select>
+
+    <select id="existsLike" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM moment_like
+            WHERE moment_id = #{momentId} AND user_id = #{userId}
+        )
+    </select>
     <select id="selectByMomentId" resultType="com.example.java_chatroom.model.MomentLike">
-        SELECT *
+        SELECT id, moment_id AS momentId, user_id AS userId
         FROM moment_like
         WHERE moment_id = #{momentId}
     </select>

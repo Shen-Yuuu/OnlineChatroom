@@ -2,8 +2,11 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>朋友圈</title>
+    <!-- 公共样式 -->
     <link rel="stylesheet" href="css/common.css">
+    <!-- 自定义样式 -->
     <style>
         body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -49,6 +52,14 @@
 
         .post-box button:hover {
             background-color: #45a049;
+        }
+
+        /* 当前用户信息 */
+        #current-user {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
         }
 
         .moment-list {
@@ -192,16 +203,22 @@
 </head>
 <body>
 <div class="container">
+    <!-- 显示当前用户名 -->
+    <div id="current-user">加载中...</div>
+
+    <!-- 发布新动态 -->
     <div class="post-box">
         <textarea id="content" placeholder="分享你此刻的想法..."></textarea>
         <button onclick="sendMoment()">发布</button>
     </div>
 
+    <!-- 动态列表容器 -->
     <div class="moment-list" id="moment-list">
         <!-- 动态内容将通过JavaScript填充 -->
     </div>
 </div>
 
+<!-- 引入 jQuery 和 moment.js -->
 <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 <script src="js/moment.js"></script>
 </body>

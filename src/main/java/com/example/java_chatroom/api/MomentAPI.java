@@ -48,29 +48,36 @@ public class MomentAPI {
 
     // 展示所有说说
     @GetMapping("/list")
-    public List<Moment> listMoments() {
-        List<Moment> moments = momentMapper.selectAllMoments();
+    public List<Moment> listMoments(@SessionAttribute("user") User user) {
+        List<Moment> moments = momentMapper.selectAllMomentsByFriend(user.getUserId());
         for (Moment moment : moments) {
+            // 判断当前用户是否已点赞
+            boolean liked = likeMapper.existsLike(moment.getId(), (long) user.getUserId());
+            moment.setLikedByCurrentUser(liked);
             moment.setComments(commentMapper.selectCommentsByMomentId(moment.getId()));
         }
         return moments;
     }
 
+
+
     // 点赞
     @PostMapping("/like")
-    public String likeMoment(@RequestBody MomentLike like) {
+    @ResponseBody
+    public int likeMoment(@RequestBody MomentLike like) {
         if (!likeMapper.existsLike(like.getMomentId(), like.getUserId())) {
             likeMapper.insertLike(like);
         }
-        return "ok";
+        return likeMapper.countLikes(like.getMomentId());
     }
 
-    // 取消点赞
     @PostMapping("/unlike")
-    public String unlikeMoment(@RequestBody MomentLike like) {
+    @ResponseBody
+    public int unlikeMoment(@RequestBody MomentLike like) {
         likeMapper.deleteLike(like.getMomentId(), like.getUserId());
-        return "ok";
+        return likeMapper.countLikes(like.getMomentId());
     }
+
 
     // 查询点赞数
     @GetMapping("/like/count")
@@ -93,8 +100,19 @@ public class MomentAPI {
 
     // 删除评论（可选）
     @DeleteMapping("/comment/delete/{id}")
-    public String deleteComment(@PathVariable Long id, @RequestParam Long userId) {
+    @ResponseBody
+    public List<MomentComment> deleteComment(@PathVariable Long id, @RequestParam Long userId) {
+        // 获取当前评论所属的 momentId
+        MomentComment comment = commentMapper.selectById(id);
+        if (comment == null || !comment.getUserId().equals(userId)) {
+            throw new RuntimeException("无权操作此评论");
+        }
+
+        // 删除评论
         commentMapper.deleteComment(id, userId);
-        return "ok";
+
+        // 返回该动态的最新评论列表
+        return commentMapper.selectCommentsByMomentId(comment.getMomentId());
     }
+
 }

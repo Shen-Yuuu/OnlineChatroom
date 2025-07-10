@@ -40,5 +40,17 @@
             WHERE moment_id = #{momentId} AND user_id = #{userId}
         )
     </select>
+    <!-- 查询当前用户好友和自己的动态 -->
+    <select id="selectAllMomentsByFriend" resultType="com.example.java_chatroom.model.Moment">
+        SELECT m.id, m.user_id AS userId, u.username, m.content, m.create_time AS createTime,
+               (SELECT COUNT(*) FROM moment_like WHERE moment_id = m.id) AS likeCount,
+               (SELECT COUNT(*) > 0 FROM moment_like WHERE moment_id = m.id AND user_id = #{userId}) AS likedByCurrentUser
+        FROM moment m
+                 JOIN user u ON m.user_id = u.userId
+        WHERE m.user_id IN (
+            SELECT friendId FROM friend WHERE userId = #{userId}
+        ) OR m.user_id = #{userId}
+        ORDER BY m.create_time DESC
+    </select>
 
 </mapper>
