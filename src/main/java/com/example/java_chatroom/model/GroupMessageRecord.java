@@ -1,10 +1,22 @@
 package com.example.java_chatroom.model;
 
+import java.util.Date;
+
 public class GroupMessageRecord {
     private int recordId;
     private int groupId;
     private int userId;
     private String messageContent;
+
+    private Date createTime;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public int getGroupId() {
         return groupId;

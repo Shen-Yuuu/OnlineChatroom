@@ -10,4 +10,6 @@ public interface GroupMessageRecordMapper {
     void addMessage(GroupMessageRecord record);
 
     List<GroupMessageRecord> selectByGroupId(int groupId);
+
+    void insert(GroupMessageRecord record);
 }

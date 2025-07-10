@@ -4,14 +4,14 @@
 
     <!-- 插入群消息记录 -->
     <insert id="insert">
-        INSERT INTO group_message_record (groupId, userId, messageContent)
+        INSERT INTO groupmessagerecord (groupId, userId, messageContent)
         VALUES (#{groupId}, #{userId}, #{messageContent})
     </insert>
 
     <!-- 根据群组ID获取历史消息 -->
     <select id="selectByGroupId" resultType="com.example.java_chatroom.model.GroupMessageRecord">
         SELECT recordId, groupId, userId, messageContent
-        FROM group_message_record
+        FROM groupmessagerecord
         WHERE groupId = #{groupId}
         ORDER BY recordId ASC
     </select>

@@ -10,4 +10,6 @@ public interface GroupUsersMapper {
     List<Integer> getMembers(int groupId);
 
     void insert(GroupUsers gu);
+
+    List<GroupUsers> selectByGroupId(int groupId);
 }
