@@ -422,3 +422,65 @@ function createSession(friendId, sessionLi) {
         }
     });
 }
+
+
+$(function() {
+    // 用于存储搜索到的好友ID
+    let searchedFriendId = null;
+
+    // 1. 点击搜索按钮，查找用户
+    $('#search-button').on('click', function() {
+        let userIdToSearch = $('#search-input').val();
+        if (!userIdToSearch || isNaN(userIdToSearch)) {
+            alert('请输入有效的用户ID');
+            return;
+        }
+
+        $.ajax({
+            url: '/user/find?userId=' + userIdToSearch,
+            type: 'GET',
+            success: function(user) {
+                // 显示搜索结果
+                $('#result-username').text(user.username);
+                $('#search-result').show();
+                // 存储好友ID，以便添加时使用
+                searchedFriendId = user.userId;
+            },
+            error: function(xhr) {
+                // 隐藏搜索结果并提示错误
+                $('#search-result').hide();
+                alert('搜索失败: ' + (xhr.responseText || '用户不存在'));
+            }
+        });
+    });
+
+    // 2. 点击添加好友按钮
+    $('#add-friend-button').on('click', function() {
+        if (searchedFriendId === null) {
+            alert('请先搜索一个用户');
+            return;
+        }
+
+        $.ajax({
+            url: '/friend/add',
+            type: 'POST',
+            data: {
+                friendId: searchedFriendId
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    // 添加成功后可以隐藏搜索结果区域
+                    $('#search-result').hide();
+                    getFriendList();
+                } else {
+                    alert('添加失败: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('请求失败，请检查网络或联系管理员');
+            }
+        });
+    });
+
+});
