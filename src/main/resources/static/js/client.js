@@ -3,11 +3,11 @@
 ////////////////////////////////////////////
 
 function initSwitchTab() {
-    // 1. 先获取到相关的元素(标签页的按钮, 会话列表, 好友列表)
+    // 1. 先获取到相关的元素(标签页的按钮, 会话列表, 好友���表)
     let tabSession = document.querySelector('.tab .tab-session');
     let tabFriend = document.querySelector('.tab .tab-friend');
     // querySelectorAll 可以同时选中多个元素. 得到的结果是个数组
-    // [0] 就是会话列表
+    // [0] 就是��话列表
     // [1] 就是好友列表
     let lists = document.querySelectorAll('.list');
     // 2. 针对标签页按钮, 注册点击事件. 
@@ -19,18 +19,18 @@ function initSwitchTab() {
         // a) 设置图标
         tabSession.style.backgroundImage = 'url(img/对话.png)';
         tabFriend.style.backgroundImage = 'url(img/用户2.png)';
-        // b) 让会话列表显示出来, 让好友列表进行隐藏
-        lists[0].classList = 'list';
-        lists[1].classList = 'list hide';
+        // b) 让会话列表显示出来，让好友列表隐藏
+        lists[0].classList.remove('hide'); // 显示会话列表
+        lists[1].classList.add('hide');    // 隐藏好友列表
     }
 
     tabFriend.onclick = function() {
         // a) 设置图标
         tabSession.style.backgroundImage = 'url(img/对话2.png)';
-        tabFriend.style.backgroundImage = 'url(img/用户.png)'
-        // b) 让好友列表显示, 让会话列表隐藏
-        lists[0].classList = 'list hide';
-        lists[1].classList = 'list';
+        tabFriend.style.backgroundImage = 'url(img/用户.png)';
+        // b) 让好友列表显示，让会话列表隐藏
+        lists[0].classList.add('hide');    // 隐藏会话列表
+        lists[1].classList.remove('hide'); // 显示好友列表
     }
 }
 
@@ -99,7 +99,7 @@ function handleMessage(resp) {
     let sessionListUL = document.querySelector('#session-list');
     sessionListUL.insertBefore(curSessionLi, sessionListUL.children[0]);
     // 4. 如果当前收到消息的会话处于被选中状态, 则把当前的消息给放到右侧消息列表中. 
-    //    新增消息的同时, 注意调整滚动条的位置, 保证新消息虽然在底部, 但是能够被用户直接看到. 
+    //    新增消息的同时, 注意调整滚动条的位置, 保证新消息��然在底部, 但是能够被用户直接看到.
     if (curSessionLi.className == 'selected') {
         // 把消息列表添加一个新消息. 
         let messageShowDiv = document.querySelector('.right .message-show');
@@ -172,12 +172,15 @@ function getUserInfo() {
         type: 'get',
         url: 'userInfo',
         success: function(body) {
+            console.log("Response from /userInfo:", body); // 添加调试输出
+
             // 从服务器获取到数据. 
             // 校验结果是否有效. 
             if (body.userId && body.userId > 0) {
                 // 如果结果有效, 则把用户名显示到界面上. 
-                // 同时也可以记录 userId 到 html 标签的属性中. (以备后用)
+                // 同时也可以记录 userId 到 html 标签的属��中. (以备后用)
                 let userDiv = document.querySelector('.main .left .user');
+                console.log("User div element:", userDiv)
                 userDiv.innerHTML = body.username;
                 userDiv.setAttribute("user-id", body.userId);
             } else {
@@ -196,6 +199,7 @@ function getFriendList() {
         type: 'get',
         url: 'friendList',
         success: function(body) {
+            console.log("Response from /friendList:", body); // 添加调试输出
             // 1. 先把之前的好友列表的内容, 给清空
             let friendListUL = document.querySelector('#friend-list');
             friendListUL.innerHTML = '';
@@ -214,11 +218,27 @@ function getFriendList() {
                     clickFriend(friend);
                 }
             }
+            applyFriendSearch();
         },
         error: function() {
             console.log('获取好友列表失败!');
         }
     });
+}
+
+// 实现搜索过滤功能
+function applyFriendSearch() {
+    const searchText = $('#friend-search-input').val().toLowerCase();
+    if (searchText !== '') {
+        $('#friend-list li').each(function() {
+            const friendName = $(this).find('h4').text().toLowerCase();
+            if (friendName.includes(searchText)) {
+                $(this).removeClass('hidden-friend');
+            } else {
+                $(this).addClass('hidden-friend');
+            }
+        });
+    }
 }
 
 getFriendList();
@@ -228,6 +248,7 @@ function getSessionList() {
         type: 'get',
         url: 'sessionList',
         success: function(body) {
+            console.log("Response from /sessionList:", body); // 添加调试输出
             // 1. 清空之前的会话列表
             let sessionListUL = document.querySelector('#session-list');
             sessionListUL.innerHTML = '';
@@ -239,7 +260,7 @@ function getSessionList() {
                 }
 
                 let li = document.createElement('li');
-                // 把会话 id 保存到 li 标签的自定义属性中. 
+                // ���会话 id 保存到 li 标签的自定义属性中.
                 li.setAttribute('message-session-id', session.sessionId);
                 li.innerHTML = '<h3>' + session.friends[0].friendName + '</h3>' 
                     + '<p>' + session.lastMessage + '</p>';
@@ -262,9 +283,22 @@ function clickSession(currentLi) {
     // 1. 设置高亮
     let allLis = document.querySelectorAll('#session-list>li');
     activeSession(allLis, currentLi);
-    // 2. 获取指定会话的历史消息 TODO
+
+    // 2. 获取指定会话的历史消息
     let sessionId = currentLi.getAttribute("message-session-id");
     getHistoryMessage(sessionId);
+
+    // 3. 更新历史记录按钮的链接
+    updateHistoryButtonLink(sessionId);
+}
+
+function updateHistoryButtonLink(sessionId) {
+    const historyButton = document.getElementById('history-link');
+    if (historyButton && sessionId) {
+        // 不再设置href属性，而是存储sessionId到data属性
+        $(historyButton).data('sessionId', sessionId);
+        historyButton.style.display = 'inline-block';
+    }
 }
 
 function activeSession(allLis, currentLi) {
@@ -281,21 +315,23 @@ function activeSession(allLis, currentLi) {
 // 这个函数负责获取指定会话的历史消息. 
 function getHistoryMessage(sessionId) {
     console.log("获取历史消息 sessionId=" + sessionId);
-    // 1. 先清空右侧列表中的已有内容
-    let titleDiv = document.querySelector('.right .title');
-    titleDiv.innerHTML = '';
+    // 1. 先清空右侧消息列表中的已有内容
     let messageShowDiv = document.querySelector('.right .message-show');
     messageShowDiv.innerHTML = '';
 
     // 2. 重新设置会话的标题. 新的会话标题是点击的那个会话上面显示的标题
     //    先找到当前选中的会话是哪个. 被选中的会话带有 selected 类的. 
     let selectedH3 = document.querySelector('#session-list .selected>h3');
-    if (selectedH3) {
-        // selectedH3 可能不存在的. 比如页面加载阶段, 可能并没有哪个会话被选中. 
-        // 也就没有会话带有 selected 标签. 此时就无法查询出这个 selectedH3
-        titleDiv.innerHTML = selectedH3.innerHTML;
+    let sessionTitleSpan = document.querySelector('.right .title .session-title');
+    if (selectedH3 && sessionTitleSpan) {
+        // 只更新标题文本，不清空整个标题栏
+        sessionTitleSpan.innerHTML = selectedH3.innerHTML;
     }
-    // 3. 发送 ajax 请求给服务器, 获取到该会话的历史消息. 
+
+    // 确保聊天记录按钮可见，并更新链接
+    updateHistoryButtonLink(sessionId);
+
+    // 3. 发送 ajax 请求给服务器, 获取到该会话的历史消息.
     $.ajax({
         type: 'get',
         url: 'message?sessionId=' + sessionId,
@@ -314,7 +350,7 @@ function getHistoryMessage(sessionId) {
 function addMessage(messageShowDiv, message) {
     // 使用这个 div 表示一条消息
     let messageDiv = document.createElement('div');
-    // 此处需要针对当前消息是不是用户自己发的, 决定是靠左还是靠右. 
+    // 此处需要针对当前消息是不是用户自己发的, 决定是靠左还是靠���.
     let selfUsername = document.querySelector('.left .user').innerHTML;
     if (selfUsername == message.fromName) {
         // 消息是自己发的. 靠右
@@ -350,10 +386,10 @@ function clickFriend(friend) {
         // 2. 如果存在匹配的结果, 就把这个会话设置成选中状态, 获取历史消息, 并且置顶. 
         //    insertBefore 把这个找到的 li 标签放到最前面去. 
         sessionListUL.insertBefore(sessionLi, sessionListUL.children[0]);
-        //    此处设置会话选中状态, 获取历史消息, 这俩功能其实在上面的 clickSession 中已经有了. 
+        //    此处设置会话选中���态, 获取历史消息, 这俩功能其实在上面的 clickSession 中已经有了.
         //    此处直接调用 clickSession 即可
         //    clickSession(sessionLi);
-        //    或者还可以模拟一下点击操作. 
+        //    ���者还可以模拟一下点击操作.
         sessionLi.click();
     } else {
         // 3. 如果不存在匹配的结果, 就创建个新会话(创建 li 标签 + 通知服务器)
@@ -369,8 +405,8 @@ function clickFriend(friend) {
         //     发送消息给服务器, 告诉服务器当前新创建的会话是啥样的. 
         createSession(friend.friendId, sessionLi);
     }
-    // 4. 还需要把标签页给切换到 会话列表. 
-    //    实现方式很容易, 只要找到会话列表标签页按钮, 模拟一个点击操作即可. 
+    // 4. ���需要把标签页给切换到 会话列表.
+    //    实现方式很容易, 只要找到会话列表标签页按钮, 模���一个点击操作即可.
     let tabSession = document.querySelector('.tab .tab-session');
     tabSession.click();
 }
@@ -389,7 +425,7 @@ function findSessionByName(username) {
     return null;
 }
 
-// friendId 是构造 HTTP 请求时必备的信息
+// friendId 是构造 HTTP 请求时必备的��息
 function createSession(friendId, sessionLi) {
     $.ajax({
         type: 'post',
@@ -403,3 +439,153 @@ function createSession(friendId, sessionLi) {
         }
     });
 }
+
+
+$(function() {
+
+    // 点击"添加好友"按钮时，显示搜索框
+    $("#show-search-button").click(function() {
+        $(".search").show();
+        $("#show-search-button").parent().hide(); // 隐藏添加好友按钮
+    });
+
+    $('#history-link').on('click', function() {
+        const sessionId = $(this).data('sessionId');
+        if (sessionId) {
+            // 在新窗口打开聊天记录页面
+            window.open('history.html?sessionId=' + sessionId, '_blank');
+        } else {
+            // 如果没有sessionId，仍然打开聊天记录页面
+            window.open('history.html', '_blank');
+        }
+    });
+
+    // 用于存储搜索到的好友ID
+    let searchedFriendId = null;
+
+    // 1. 点击搜索按钮，查找用户
+    $('#search-button').on('click', function() {
+        let userIdToSearch = $('#search-input').val();
+        if (!userIdToSearch || isNaN(userIdToSearch)) {
+            alert('请输入有效的用户ID');
+            return;
+        }
+
+        $.ajax({
+            url: '/user/find?userId=' + userIdToSearch,
+            type: 'GET',
+            success: function(user) {
+                // 显示搜索结果
+                $('#result-username').text(user.username);
+                $('#search-result').show();
+                // 存储好友ID，以便添加时使用
+                searchedFriendId = user.userId;
+            },
+            error: function(xhr) {
+                // 隐藏搜索结果并提示错误
+                $('#search-result').hide();
+                alert('搜索失败: ' + (xhr.responseText || '用户不存在'));
+            }
+        });
+    });
+
+    // 2. 点击添加好友按钮
+    $('#add-friend-button').on('click', function() {
+        if (searchedFriendId === null) {
+            alert('请先搜索一个用户');
+            return;
+        }
+
+        $.ajax({
+            url: '/friend/add',
+            type: 'POST',
+            data: {
+                friendId: searchedFriendId
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    // 添加成功后可以隐藏搜索结果区域
+                    resetSearchArea();
+                    getFriendList();
+                } else {
+                    alert('添加失败: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('请求失败，请检查网络或联系管理员');
+            }
+        });
+    });
+
+    let currentListType = 'session'; // 'session' 或 'friend'
+
+    // 监听标签页切换，更新当前列表类型
+    $('.tab-session').click(function() {
+        currentListType = 'session';
+        updateSearchPlaceholder();
+        $('#friend-search-input').val('');
+        $('#session-list li').removeClass('hidden-item');
+    });
+
+    $('.tab-friend').click(function() {
+        currentListType = 'friend';
+        updateSearchPlaceholder();
+        $('#friend-search-input').val('');
+        $('#session-list li').removeClass('hidden-item');
+
+    });
+
+    // 更新搜索框的提示文本
+    function updateSearchPlaceholder() {
+        if (currentListType === 'session') {
+            $('#friend-search-input').attr('placeholder', '搜索会话');
+        } else {
+            $('#friend-search-input').attr('placeholder', '搜索好友');
+        }
+    }
+
+    // 搜索功能 - 处理输入事件
+    $('#friend-search-input').on('input', function() {
+        const searchText = $(this).val().toLowerCase();
+
+        if (currentListType === 'session') {
+            // 搜索会话列表
+            $('#session-list li').each(function() {
+                const sessionName = $(this).find('h3').text().toLowerCase();
+                const messagePreview = $(this).find('p').text().toLowerCase();
+
+                if (sessionName.includes(searchText) || messagePreview.includes(searchText)) {
+                    $(this).removeClass('hidden-item');
+                } else {
+                    $(this).addClass('hidden-item');
+                }
+            });
+        } else {
+            // 搜索好友列表
+            $('#friend-list li').each(function() {
+                const friendName = $(this).find('h4').text().toLowerCase();
+
+                if (friendName.includes(searchText)) {
+                    $(this).removeClass('hidden-item');
+                } else {
+                    $(this).addClass('hidden-item');
+                }
+            });
+        }
+    });
+
+    // 初始化搜索框提示文本
+    updateSearchPlaceholder();
+
+    // 添加好友成功后或取消搜索时，可以添加返回的代码
+    function resetSearchArea() {
+        $(".search").hide();
+        $(".search-result").hide();
+        $("#search-input").val(""); // 清空搜索框
+        $(".add-friend-container").show(); // 显示添加好友按钮
+    }
+
+
+});
+

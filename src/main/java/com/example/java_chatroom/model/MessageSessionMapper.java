@@ -1,6 +1,7 @@
 package com.example.java_chatroom.model;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface MessageSessionMapper {
     List<Integer> getSessionIdsByUserId(int userId);
 
     // 2. 根据 sessionId 再来查询这个会话都包含了哪些用户. (刨除最初的自己)
-    List<Friend> getFriendsBySessionId(int sessionId, int selfUserId);
+    List<Friend> getFriendsBySessionId(@Param("sessionId") int sessionId, @Param("selfUserId") int selfUserId);
 
     // 3. 新增一个会话记录, 返回会话的 id
     //    这样的方法返回值 int 表示的是插入操作影响到几行.

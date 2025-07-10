@@ -1,19 +1,23 @@
 package com.example.java_chatroom.model;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface MessageMapper {
-    // 获取指定会话的最后一条消息
-    String getLastMessageBySessionId(int sessionId);
+    // 通过这个方法实现插入消息到数据库表中
+    void insert(Message message);
 
     // 获取指定会话历史消息列表
-    // 有的会话里, 历史消息可能特别特别多.
-    // 此处做出一个限制, 默认只取最近的 100 条消息.
-    List<Message> getMessagesBySessionId(int sessionId);
+    List<Message> selectBySessionId(int sessionId);
 
-    // 通过这个方法实现插入消息到数据库表中
-    void add(Message message);
+    // 获取指定会话历史消息列表，支持关键词搜索
+    List<Message> selectBySessionIdWithQuery(@Param("sessionId") int sessionId, @Param("query") String query);
+
+    String getLastMessageBySessionId(int sessionId);
+
+    // 获取指定用户的所有历史消息, 支持模糊查询
+    List<Message> selectHistoryForUser(@Param("userId") int userId, @Param("query") String query);
 }

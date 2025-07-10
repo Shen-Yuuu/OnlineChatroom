@@ -5,7 +5,7 @@
         select sessionId from message_session
         where sessionId in
         (select sessionId from message_session_user where userId = #{userId})
-        order by lastTime desc
+        order by createTime desc
     </select>
 
     <select id="getFriendsBySessionId" resultType="com.example.java_chatroom.model.Friend">
@@ -15,10 +15,10 @@
     </select>
     
     <insert id="addMessageSession" useGeneratedKeys="true" keyProperty="sessionId">
-        insert into message_session values(null, now());
+        insert into message_session (createTime) values(now())
     </insert>
 
     <insert id="addMessageSessionUser">
-        insert into message_session_user values(#{sessionId}, #{userId})
+        insert into message_session_user values(null, #{sessionId}, #{userId})
     </insert>
 </mapper>

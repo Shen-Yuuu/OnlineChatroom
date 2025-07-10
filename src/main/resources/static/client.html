@@ -21,12 +21,25 @@
                 <div class="user">
                     
                 </div>
-                <!-- 这是搜索框 -->
-                <div class="search">
+                <!-- 添加好友按钮 -->
+                <div class="add-friend-container">
+                    <button id="show-search-button">添加好友</button>
+                </div>
+
+                <!-- 搜索框区域 - 默认隐藏 -->
+                <div class="search" style="display: none;">
                     <!-- 搜索框中的输入框 -->
-                    <input type="text">
+                    <input type="text" id="search-input" placeholder="输入用户ID搜索">
                     <!-- 点击按钮进行搜索 -->
-                    <button></button>
+                    <button id="search-button">搜索</button>
+                </div>
+
+                <!-- 搜索结果显示区域 -->
+                <div class="search-result" id="search-result" style="display: none;">
+                    <div class="result-item">
+                        <span id="result-username"></span>
+                        <button id="add-friend-button">添加好友</button>
+                    </div>
                 </div>
                 <!-- 标签页 -->
                 <div class="tab">
@@ -35,6 +48,13 @@
                     <!-- 好友列表标签 -->
                     <div class="tab-friend"></div>
                 </div>
+
+                <div class="friend-list-header">
+                    <div class="friend-search">
+                        <input type="text" id="friend-search-input" placeholder="搜索好友">
+                    </div>
+                </div>
+
                 <!-- 会话列表 -->
                 <ul class="list" id="session-list">
                     <li>
@@ -62,6 +82,7 @@
                         <p>晚上吃啥</p>
                     </li>
                 </ul>
+
                 <!-- 好友列表 -->
                 <ul class="list hide" id="friend-list">
                     <li>
@@ -85,7 +106,10 @@
             <!-- 右侧区域, 显示聊天编辑框 -->
             <div class="right">
                 <!-- 会话标题 -->
-                <div class="title"></div>
+                <div class="title">
+                    <span class="session-title">请选择一个会话</span>
+                    <button id="history-link" class="history-button">查看聊天记录</button>
+                </div>
                 <!-- 消息区 -->
                 <div class="message-show">
                     <!-- <div class="message message-left">
