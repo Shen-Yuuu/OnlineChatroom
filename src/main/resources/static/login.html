@@ -28,6 +28,9 @@
             <div class="row">
                 <button id="submit">登录</button>
             </div>
+            <div class="row" style="margin-top: 10px;">
+                <a href="register.html" style="font-size: 14px; color: #666; text-decoration: none;">注册用户</a>
+            </div>
         </div>
     </div>
 
@@ -55,12 +58,12 @@
                 },
                 success: function(body) {
                     // 3. 处理响应
-                    // 此处的 body 相当于响应的 user 对象. 
+                    // 此处的 body 相当于响应的 user 对象.
                     if (body && body.userId > 0) {
                         // 登录成功!
                         alert("登录成功!");
                         // 跳转到客户端主页面 (聊天页面)
-                        // 注意!! 当前尚未创建这个页面, 一会运行会出现 404 
+                        // 注意!! 当前尚未创建这个页面, 一会运行会出现 404
                         location.assign('/client.html');
                     } else {
                         alert("登录失败!");
