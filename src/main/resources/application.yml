@@ -11,3 +11,6 @@ mybatis:
 logging:
   pattern:
     console: "[%-5level] - %msg%n"
+# application.yml
+  level:
+    com.example.java_chatroom.model.FriendMapper: DEBUG
