@@ -344,26 +344,42 @@
     align-items: center;
 }
 
-/* 添加的查看个人信息链接样式 - 开始 */
-.view-profile {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    padding: 8px 12px;
-    background-color: #f0f0f0;
-    border-radius: 4px;
-}
-
-.profile-link {
-    color: #1890ff;
+/* 个人信息按钮样式 */
+.main .right .title .userinfo-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    background-color: #4285f4;
+    color: white;
     text-decoration: none;
+    border-radius: 20px;
     font-size: 14px;
+    font-weight: 500;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-right: 12px;
 }
 
-.profile-link:hover {
-    text-decoration: underline;
+.main .right .title .userinfo-button:hover {
+    background-color: #3367d6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
-/* 添加的查看个人信息链接样式 - 结束 */
+
+.main .right .title .userinfo-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+/* 可选：添加图标 */
+.main .right .title .userinfo-button::before {
+    content: "👤";
+    margin-right: 6px;
+    font-size: 16px;
+}
+
 
 #add-friend-button {
     background-color: #4CAF50;
