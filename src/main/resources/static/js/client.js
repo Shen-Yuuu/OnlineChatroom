@@ -460,6 +460,17 @@ $(function() {
         }
     });
 
+    $('#userinfo-link').on('click', function() {
+        const sessionId = $(this).data('sessionId');
+        if (sessionId) {
+            // 在新窗口打开聊天记录页面
+            window.open('userinfo.html?sessionId=' + sessionId, '_blank');
+        } else {
+            // 如果没有sessionId，仍然打开聊天记录页面
+            window.open('userinfo.html', '_blank');
+        }
+    });
+
     // 用于存储搜索到的好友ID
     let searchedFriendId = null;
 
