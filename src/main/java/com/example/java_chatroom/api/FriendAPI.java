@@ -3,20 +3,26 @@ package com.example.java_chatroom.api;
 import com.example.java_chatroom.model.Friend;
 import com.example.java_chatroom.model.FriendMapper;
 import com.example.java_chatroom.model.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.java_chatroom.service.FriendService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class FriendAPI {
     @Resource
     private FriendMapper friendMapper;
+
+    @Autowired
+    private FriendService friendService;
+
 
     @GetMapping("/friendList")
     @ResponseBody
@@ -36,7 +42,32 @@ public class FriendAPI {
             return new ArrayList<Friend>();
         }
         // 2. 根据 userId 从数据库查数据即可
-        List<Friend> friendList = friendMapper.selectFriendList(user.getUserId());
-        return friendList;
+        return friendMapper.selectFriendList(user.getUserId());
+    }
+
+    @PostMapping("/friend/add")
+    public Map<String, Object> addFriend(@RequestParam int friendId, HttpServletRequest req) {
+        Map<String, Object> result = new HashMap<>();
+        // 假设当前登录用户的 User 对象存储在 Session 中
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            result.put("success", false);
+            result.put("message", "用户未登录");
+            return result;
+        }
+
+        // 从 Session 中获取当前用户的 ID
+        com.example.java_chatroom.model.User currentUser = (com.example.java_chatroom.model.User) session.getAttribute("user");
+        int currentUserId = currentUser.getUserId();
+
+        try {
+            friendService.addFriend(currentUserId, friendId);
+            result.put("success", true);
+            result.put("message", "好友添加成功");
+        } catch (RuntimeException e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
     }
 }
