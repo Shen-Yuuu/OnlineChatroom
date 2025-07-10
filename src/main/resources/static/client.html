@@ -24,9 +24,17 @@
                 <!-- 这是搜索框 -->
                 <div class="search">
                     <!-- 搜索框中的输入框 -->
-                    <input type="text">
+                    <input type="text" id="search-input" placeholder="输入用户ID搜索">
                     <!-- 点击按钮进行搜索 -->
-                    <button></button>
+                    <button id="search-button">搜索</button>
+                </div>
+
+                <!-- 搜索结果显示区域 -->
+                <div class="search-result" id="search-result" style="display: none;">
+                    <div class="result-item">
+                        <span id="result-username"></span>
+                        <button id="add-friend-button">添加好友</button>
+                    </div>
                 </div>
                 <!-- 标签页 -->
                 <div class="tab">

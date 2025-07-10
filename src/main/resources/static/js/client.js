@@ -19,18 +19,18 @@ function initSwitchTab() {
         // a) 设置图标
         tabSession.style.backgroundImage = 'url(img/对话.png)';
         tabFriend.style.backgroundImage = 'url(img/用户2.png)';
-        // b) 让会话列表显示出来, 让好友列表进行隐藏
-        lists[0].classList = 'list';
-        lists[1].classList = 'list hide';
+        // b) 让会话列表显示出来，让好友列表隐藏
+        lists[0].classList.remove('hide'); // 显示会话列表
+        lists[1].classList.add('hide');    // 隐藏好友列表
     }
 
     tabFriend.onclick = function() {
         // a) 设置图标
         tabSession.style.backgroundImage = 'url(img/对话2.png)';
-        tabFriend.style.backgroundImage = 'url(img/用户.png)'
-        // b) 让好友列表显示, 让会话列表隐藏
-        lists[0].classList = 'list hide';
-        lists[1].classList = 'list';
+        tabFriend.style.backgroundImage = 'url(img/用户.png)';
+        // b) 让好友列表显示，让会话列表隐藏
+        lists[0].classList.add('hide');    // 隐藏会话列表
+        lists[1].classList.remove('hide'); // 显示好友列表
     }
 }
 
@@ -172,12 +172,15 @@ function getUserInfo() {
         type: 'get',
         url: 'userInfo',
         success: function(body) {
+            console.log("Response from /userInfo:", body); // 添加调试输出
+
             // 从服务器获取到数据. 
             // 校验结果是否有效. 
             if (body.userId && body.userId > 0) {
                 // 如果结果有效, 则把用户名显示到界面上. 
                 // 同时也可以记录 userId 到 html 标签的属��中. (以备后用)
                 let userDiv = document.querySelector('.main .left .user');
+                console.log("User div element:", userDiv)
                 userDiv.innerHTML = body.username;
                 userDiv.setAttribute("user-id", body.userId);
             } else {
@@ -196,6 +199,7 @@ function getFriendList() {
         type: 'get',
         url: 'friendList',
         success: function(body) {
+            console.log("Response from /friendList:", body); // 添加调试输出
             // 1. 先把之前的好友列表的内容, 给清空
             let friendListUL = document.querySelector('#friend-list');
             friendListUL.innerHTML = '';
@@ -228,6 +232,7 @@ function getSessionList() {
         type: 'get',
         url: 'sessionList',
         success: function(body) {
+            console.log("Response from /sessionList:", body); // 添加调试输出
             // 1. 清空之前的会话列表
             let sessionListUL = document.querySelector('#session-list');
             sessionListUL.innerHTML = '';

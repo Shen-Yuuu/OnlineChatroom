@@ -58,8 +58,8 @@ public class WebSocketAPI extends TextWebSocketHandler {
         }
     }
 
-    // 通过这个方法来完成消息实际的转发工作.
-    // 第一个参数就表示这个要转发的消息, 是从谁那来的.
+     // 通过这个方法来完成消息实际的转发工作.
+        // 第一个参数就表示这个要转发的消息, 是从谁那来的.
     private void transferMessage(User fromUser, MessageRequest req) throws IOException {
         // 1. 先构造一个待转发的响应对象. MessageResponse
         MessageResponse resp = new MessageResponse();

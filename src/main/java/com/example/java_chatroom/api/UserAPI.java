@@ -3,19 +3,21 @@ package com.example.java_chatroom.api;
 import com.example.java_chatroom.model.User;
 import com.example.java_chatroom.model.UserMapper;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class UserAPI {
     @Resource
     UserMapper userMapper;
+
 
     @PostMapping("/login")
     @ResponseBody
@@ -74,6 +76,19 @@ public class UserAPI {
         }
         user.setPassword("");
         return user;
+    }
+
+    @GetMapping("/user/find")
+    public ResponseEntity<Object> findUser(@RequestParam int userId) {
+        User user = userMapper.findUserById(userId);
+        if (user == null) {
+            return new ResponseEntity<>("用户不存在", HttpStatus.NOT_FOUND);
+        }
+        // 只返回不敏感的信息
+        Map<String, Object> result = new HashMap<>();
+        result.put("userId", user.getUserId());
+        result.put("username", user.getUsername());
+        return ResponseEntity.ok(result);
     }
 }
 
