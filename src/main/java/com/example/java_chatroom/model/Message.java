@@ -1,18 +1,30 @@
 package com.example.java_chatroom.model;
 
-public class Message {
-    private int messageId;
-    private int fromId; // 表示发送者用户 id
-    private String fromName; // 表示发送者的用户名
-    private int sessionId;
-    private String content;
+import lombok.Data;
 
-    public int getMessageId() {
+import java.util.Date;
+
+@Data
+public class Message {
+    private long messageId;
+    private int sessionId;
+    private int fromId;
+    private String fromName;
+
+    public long getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(int messageId) {
+    public void setMessageId(long messageId) {
         this.messageId = messageId;
+    }
+
+    public int getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(int sessionId) {
+        this.sessionId = sessionId;
     }
 
     public int getFromId() {
@@ -31,14 +43,6 @@ public class Message {
         this.fromName = fromName;
     }
 
-    public int getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId) {
-        this.sessionId = sessionId;
-    }
-
     public String getContent() {
         return content;
     }
@@ -46,5 +50,15 @@ public class Message {
     public void setContent(String content) {
         this.content = content;
     }
-}
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    private String content;
+    private Date createTime;
+}

@@ -1,18 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.java_chatroom.model.MessageMapper">
-    <select id="getLastMessageBySessionId" resultType="java.lang.String">
-        select content from message where sessionId = #{sessionId} order by postTime desc limit 1
-    </select>
-    
-    <select id="getMessagesBySessionId" resultType="com.example.java_chatroom.model.Message">
-        select messageId, fromId, username as fromName, sessionId, content
-        from user, message
-        where user.userId = message.fromId and message.sessionId = #{sessionId}
-        order by postTime desc limit 100
+    <insert id="insert">
+        insert into message(sessionId, fromId, content, createTime)
+        values(#{sessionId}, #{fromId}, #{content}, #{createTime})
+    </insert>
+
+    <select id="selectBySessionId" resultType="com.example.java_chatroom.model.Message">
+        select
+            m.messageId, m.sessionId, m.fromId, u.username as fromName, m.content, m.createTime
+        from
+            message m join user u on m.fromId = u.userId
+        where
+            m.sessionId = #{sessionId}
+        order by
+            m.createTime
     </select>
 
-    <insert id="add">
-        insert into message values(null, #{fromId}, #{sessionId}, #{content}, now())
-    </insert>
+    <select id="selectBySessionIdWithQuery" resultType="com.example.java_chatroom.model.Message">
+        select
+            m.messageId, m.sessionId, m.fromId, u.username as fromName, m.content, m.createTime
+        from
+            message m join user u on m.fromId = u.userId
+        where
+            m.sessionId = #{sessionId}
+            and m.content like concat('%', #{query}, '%')
+        order by
+            m.createTime
+    </select>
+
+    <select id="getLastMessageBySessionId" resultType="java.lang.String">
+        select content from message where sessionId = #{sessionId} order by createTime desc limit 1
+    </select>
+
+    <select id="selectHistoryForUser" resultType="com.example.java_chatroom.model.Message">
+        select
+            m.messageId, m.sessionId, m.fromId, u.username as fromName, m.content, m.createTime
+        from
+            message m
+        join
+            user u on m.fromId = u.userId
+        where
+            m.sessionId in (select sessionId from message_session_user where userId = #{userId})
+            <if test="query != null and query != ''">
+                and m.content like concat('%', #{query}, '%')
+            </if>
+        order by
+            m.createTime desc
+    </select>
 </mapper>

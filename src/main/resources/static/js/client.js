@@ -3,11 +3,11 @@
 ////////////////////////////////////////////
 
 function initSwitchTab() {
-    // 1. 先获取到相关的元素(标签页的按钮, 会话列表, 好友列表)
+    // 1. 先获取到相关的元素(标签页的按钮, 会话列表, 好友���表)
     let tabSession = document.querySelector('.tab .tab-session');
     let tabFriend = document.querySelector('.tab .tab-friend');
     // querySelectorAll 可以同时选中多个元素. 得到的结果是个数组
-    // [0] 就是会话列表
+    // [0] 就是��话列表
     // [1] 就是好友列表
     let lists = document.querySelectorAll('.list');
     // 2. 针对标签页按钮, 注册点击事件. 
@@ -99,7 +99,7 @@ function handleMessage(resp) {
     let sessionListUL = document.querySelector('#session-list');
     sessionListUL.insertBefore(curSessionLi, sessionListUL.children[0]);
     // 4. 如果当前收到消息的会话处于被选中状态, 则把当前的消息给放到右侧消息列表中. 
-    //    新增消息的同时, 注意调整滚动条的位置, 保证新消息虽然在底部, 但是能够被用户直接看到. 
+    //    新增消息的同时, 注意调整滚动条的位置, 保证新消息��然在底部, 但是能够被用户直接看到.
     if (curSessionLi.className == 'selected') {
         // 把消息列表添加一个新消息. 
         let messageShowDiv = document.querySelector('.right .message-show');
@@ -176,7 +176,7 @@ function getUserInfo() {
             // 校验结果是否有效. 
             if (body.userId && body.userId > 0) {
                 // 如果结果有效, 则把用户名显示到界面上. 
-                // 同时也可以记录 userId 到 html 标签的属性中. (以备后用)
+                // 同时也可以记录 userId 到 html 标签的属��中. (以备后用)
                 let userDiv = document.querySelector('.main .left .user');
                 userDiv.innerHTML = body.username;
                 userDiv.setAttribute("user-id", body.userId);
@@ -239,7 +239,7 @@ function getSessionList() {
                 }
 
                 let li = document.createElement('li');
-                // 把会话 id 保存到 li 标签的自定义属性中. 
+                // ���会话 id 保存到 li 标签的自定义属性中.
                 li.setAttribute('message-session-id', session.sessionId);
                 li.innerHTML = '<h3>' + session.friends[0].friendName + '</h3>' 
                     + '<p>' + session.lastMessage + '</p>';
@@ -262,9 +262,21 @@ function clickSession(currentLi) {
     // 1. 设置高亮
     let allLis = document.querySelectorAll('#session-list>li');
     activeSession(allLis, currentLi);
-    // 2. 获取指定会话的历史消息 TODO
+
+    // 2. 获取指定会话的历史消息
     let sessionId = currentLi.getAttribute("message-session-id");
     getHistoryMessage(sessionId);
+
+    // 3. 更新历史记录按钮的链接
+    updateHistoryButtonLink(sessionId);
+}
+
+function updateHistoryButtonLink(sessionId) {
+    const historyButton = document.getElementById('history-link');
+    if (historyButton && sessionId) {
+        historyButton.href = 'history.html?sessionId=' + sessionId;
+        historyButton.style.display = 'inline-block';
+    }
 }
 
 function activeSession(allLis, currentLi) {
@@ -281,21 +293,23 @@ function activeSession(allLis, currentLi) {
 // 这个函数负责获取指定会话的历史消息. 
 function getHistoryMessage(sessionId) {
     console.log("获取历史消息 sessionId=" + sessionId);
-    // 1. 先清空右侧列表中的已有内容
-    let titleDiv = document.querySelector('.right .title');
-    titleDiv.innerHTML = '';
+    // 1. 先清空右侧消息列表中的已有内容
     let messageShowDiv = document.querySelector('.right .message-show');
     messageShowDiv.innerHTML = '';
 
     // 2. 重新设置会话的标题. 新的会话标题是点击的那个会话上面显示的标题
     //    先找到当前选中的会话是哪个. 被选中的会话带有 selected 类的. 
     let selectedH3 = document.querySelector('#session-list .selected>h3');
-    if (selectedH3) {
-        // selectedH3 可能不存在的. 比如页面加载阶段, 可能并没有哪个会话被选中. 
-        // 也就没有会话带有 selected 标签. 此时就无法查询出这个 selectedH3
-        titleDiv.innerHTML = selectedH3.innerHTML;
+    let sessionTitleSpan = document.querySelector('.right .title .session-title');
+    if (selectedH3 && sessionTitleSpan) {
+        // 只更新标题文本，不清空整个标题栏
+        sessionTitleSpan.innerHTML = selectedH3.innerHTML;
     }
-    // 3. 发送 ajax 请求给服务器, 获取到该会话的历史消息. 
+
+    // 确保聊天记录按钮可见，并更新链接
+    updateHistoryButtonLink(sessionId);
+
+    // 3. 发送 ajax 请求给服务器, 获取到该会话的历史消息.
     $.ajax({
         type: 'get',
         url: 'message?sessionId=' + sessionId,
@@ -314,7 +328,7 @@ function getHistoryMessage(sessionId) {
 function addMessage(messageShowDiv, message) {
     // 使用这个 div 表示一条消息
     let messageDiv = document.createElement('div');
-    // 此处需要针对当前消息是不是用户自己发的, 决定是靠左还是靠右. 
+    // 此处需要针对当前消息是不是用户自己发的, 决定是靠左还是靠���.
     let selfUsername = document.querySelector('.left .user').innerHTML;
     if (selfUsername == message.fromName) {
         // 消息是自己发的. 靠右
@@ -350,10 +364,10 @@ function clickFriend(friend) {
         // 2. 如果存在匹配的结果, 就把这个会话设置成选中状态, 获取历史消息, 并且置顶. 
         //    insertBefore 把这个找到的 li 标签放到最前面去. 
         sessionListUL.insertBefore(sessionLi, sessionListUL.children[0]);
-        //    此处设置会话选中状态, 获取历史消息, 这俩功能其实在上面的 clickSession 中已经有了. 
+        //    此处设置会话选中���态, 获取历史消息, 这俩功能其实在上面的 clickSession 中已经有了.
         //    此处直接调用 clickSession 即可
         //    clickSession(sessionLi);
-        //    或者还可以模拟一下点击操作. 
+        //    ���者还可以模拟一下点击操作.
         sessionLi.click();
     } else {
         // 3. 如果不存在匹配的结果, 就创建个新会话(创建 li 标签 + 通知服务器)
@@ -369,8 +383,8 @@ function clickFriend(friend) {
         //     发送消息给服务器, 告诉服务器当前新创建的会话是啥样的. 
         createSession(friend.friendId, sessionLi);
     }
-    // 4. 还需要把标签页给切换到 会话列表. 
-    //    实现方式很容易, 只要找到会话列表标签页按钮, 模拟一个点击操作即可. 
+    // 4. ���需要把标签页给切换到 会话列表.
+    //    实现方式很容易, 只要找到会话列表标签页按钮, 模���一个点击操作即可.
     let tabSession = document.querySelector('.tab .tab-session');
     tabSession.click();
 }
@@ -389,7 +403,7 @@ function findSessionByName(username) {
     return null;
 }
 
-// friendId 是构造 HTTP 请求时必备的信息
+// friendId 是构造 HTTP 请求时必备的��息
 function createSession(friendId, sessionLi) {
     $.ajax({
         type: 'post',

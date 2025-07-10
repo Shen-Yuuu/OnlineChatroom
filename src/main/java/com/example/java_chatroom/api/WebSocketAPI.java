@@ -12,6 +12,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -101,8 +102,8 @@ public class WebSocketAPI extends TextWebSocketHandler {
         message.setFromId(fromUser.getUserId());
         message.setSessionId(req.getSessionId());
         message.setContent(req.getContent());
-        // 像自增主键, 还有时间这样的属性, 都可以让 SQL 在数据库中生成
-        messageMapper.add(message);
+        message.setCreateTime(new Date());
+        messageMapper.insert(message);
     }
 
     @Override

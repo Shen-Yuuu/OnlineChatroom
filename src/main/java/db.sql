@@ -2,79 +2,86 @@ create database if not exists java_chatroom charset utf8;
 
 use java_chatroom;
 
-drop table if exists user;
-create table user (
-    userId int primary key auto_increment,
-    username varchar(20) unique,
-    password varchar(20)
-);
+-- ----------------------------
+-- Table structure for user
+-- ----------------------------
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user`  (
+  `userId` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`userId`) USING BTREE,
+  UNIQUE INDEX `username`(`username`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
-insert into user values(1, '张三', '123');
-insert into user values(2, '李四', '123');
-insert into user values(3, '王五', '123');
-insert into user values(4, '赵六', '123');
+-- ----------------------------
+-- Table structure for friend
+-- ----------------------------
+DROP TABLE IF EXISTS `friend`;
+CREATE TABLE `friend`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `friendId` int(11) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
--- 创建好友表
-drop table if exists friend;
-create table friend (
-    userId int,
-    friendId int
-);
+-- ----------------------------
+-- Table structure for message_session
+-- ----------------------------
+DROP TABLE IF EXISTS `message_session`;
+CREATE TABLE `message_session`  (
+  `sessionId` int(11) NOT NULL AUTO_INCREMENT,
+  `lastMessage` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `createTime` datetime(0) NULL,
+  PRIMARY KEY (`sessionId`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
-insert into friend values(1, 2);
-insert into friend values(2, 1);
-insert into friend values(1, 3);
-insert into friend values(3, 1);
-insert into friend values(1, 4);
-insert into friend values(4, 1);
+-- ----------------------------
+-- Table structure for message_session_user
+-- ----------------------------
+DROP TABLE IF EXISTS `message_session_user`;
+CREATE TABLE `message_session_user`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sessionId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
--- 创建会话表
-drop table if exists message_session;
-create table message_session (
-    sessionId int primary key auto_increment,
-    -- 上次访问时间
-    lastTime datetime
-);
+-- ----------------------------
+-- Table structure for message
+-- ----------------------------
+DROP TABLE IF EXISTS `message`;
+CREATE TABLE `message` (
+  `messageId` bigint NOT NULL AUTO_INCREMENT,
+  `sessionId` int NOT NULL,
+  `fromId` int NOT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `createTime` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`messageId`),
+  KEY `idx_session_time` (`sessionId`,`createTime`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-insert into message_session values(1, '2026-05-01 00:00:00');
-insert into message_session values(2, '2026-06-01 00:00:00');
+-- ----------------------------
+-- Records of user
+-- ----------------------------
+INSERT INTO `user` VALUES (1, '张三', '123'), (2, '李四', '123'), (3, '王五', '123'), (4, '赵六', '123');
 
--- 创建会话和用户的关联表
-drop table if exists message_session_user;
-create table message_session_user (
-    sessionId int,
-    userId int
-);
+-- ----------------------------
+-- Records of friend
+-- ----------------------------
+INSERT INTO `friend` (`userId`, `friendId`) VALUES (1, 2), (2, 1), (1, 3), (3, 1), (1, 4), (4, 1);
 
--- 1 号会话里有张三和李四
-insert into message_session_user values(1, 1), (1, 2);
--- 2 号会话里有张三和王五
-insert into message_session_user values(2, 1), (2, 3);
+-- ----------------------------
+-- Records of message_session
+-- ----------------------------
+INSERT INTO `message_session` (`sessionId`, `createTime`) VALUES (1, '2026-05-01 00:00:00'), (2, '2026-06-01 00:00:00');
 
+-- ----------------------------
+-- Records of message_session_user
+-- ----------------------------
+INSERT INTO `message_session_user` (`id`, `sessionId`, `userId`) VALUES (1, 1, 2), (2, 1, 3);
 
--- 创建消息表
-drop table if exists message;
-create table message (
-    messageId int primary key auto_increment,
-    fromId int, -- 消息是哪个用户发送的
-    sessionId int, -- 消息属于哪个会话
-    content varchar(2048), -- 消息的正文
-    postTime datetime   -- 消息的发送时间
-);
-
--- 构造几个消息数据, 方便测试
--- 张三和李四发的消息
-insert into message values (1, 1, 1, '今晚吃啥', '2026-05-01 17:00:00');
-insert into message values (2, 2, 1, '随便', '2026-05-01 17:01:00');
-insert into message values (3, 1, 1, '那吃面?', '2026-05-01 17:02:00');
-insert into message values (4, 2, 1, '不想吃', '2026-05-01 17:03:00');
-insert into message values (5, 1, 1, '那你想吃啥', '2026-05-01 17:04:00');
-insert into message values (6, 2, 1, '随便', '2026-05-01 17:05:00');
-insert into message values (11, 1, 1, '那吃米饭炒菜?', '2026-05-01 17:06:00');
-insert into message values (8, 2, 1, '不想吃', '2026-05-01 17:07:00');
-insert into message values (9, 1, 1, '那你想吃啥?', '2026-05-01 17:08:00');
-insert into message values (10, 2, 1, '随便', '2026-05-01 17:09:00');
-
--- 张三和王五发的消息
-insert into message values(7, 1, 2, '晚上一起约?', '2026-05-02 12:00:00');
-
+-- ----------------------------
+-- Records of message
+-- ----------------------------
+INSERT INTO `message` (`messageId`, `sessionId`, `fromId`, `content`, `createTime`) VALUES (1, 1, 1, '今晚吃啥', '2026-05-01 17:00:00'), (2, 2, 1, '随便', '2026-05-01 17:01:00'), (3, 1, 1, '那吃面?', '2026-05-01 17:02:00'), (4, 2, 1, '不想吃', '2026-05-01 17:03:00'), (5, 1, 1, '那你想吃啥', '2026-05-01 17:04:00'), (6, 2, 1, '随便', '2026-05-01 17:05:00'), (11, 1, 1, '那吃米饭炒菜?', '2026-05-01 17:06:00'), (8, 2, 1, '不想吃', '2026-05-01 17:07:00'), (9, 1, 1, '那你想吃啥?', '2026-05-01 17:08:00'), (10, 2, 1, '随便', '2026-05-01 17:09:00'), (7, 1, 2, '晚上一起约?', '2026-05-02 12:00:00');
