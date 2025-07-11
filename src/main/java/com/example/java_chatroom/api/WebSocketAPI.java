@@ -1,6 +1,6 @@
 package com.example.java_chatroom.api;
 
-import com.example.java_chatroom.component.OnlineUserManager;
+import com.example.java_chatroom.component.MultiSessionOnlineUserManager;
 import com.example.java_chatroom.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Component
 public class WebSocketAPI extends TextWebSocketHandler {
     @Autowired
-    private OnlineUserManager onlineUserManager;
+    private MultiSessionOnlineUserManager onlineUserManager;
 
     @Autowired
     private MessageSessionMapper messageSessionMapper;
@@ -124,12 +124,14 @@ public class WebSocketAPI extends TextWebSocketHandler {
         for (Friend friend : friends) {
             // 知道了每个用户的 userId, 进一步的查询刚才准备好的 OnlineUserManager, 就知道了对应的 WebSocketSession
             // 从而进行发送消息
-            WebSocketSession webSocketSession = onlineUserManager.getSession(friend.getFriendId());
-            if (webSocketSession == null) {
+            List<WebSocketSession> webSocketSessions = onlineUserManager.getSessions(friend.getFriendId());
+            if (webSocketSessions == null) {
                 // 如果该用户未在线, 则不发送.
                 continue;
             }
-            webSocketSession.sendMessage(new TextMessage(respJson));
+            for (WebSocketSession webSocketSession : webSocketSessions) {
+                webSocketSession.sendMessage(new TextMessage(respJson));
+            }
         }
     }
 

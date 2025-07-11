@@ -4,7 +4,7 @@
     <select id="selectByName" resultType="com.example.java_chatroom.model.User">
         select * from user where username = #{username}
     </select>
-
+    
     <insert id="insert" useGeneratedKeys="true" keyProperty="userId">
         insert into user values(null, #{username}, #{password},#{gender}, #{description})
     </insert>
@@ -12,4 +12,11 @@
     <update id="updateById" useGeneratedKeys="true" keyProperty="userId">
         update user set username = #{username}, password = #{password},description=#{description} where userId = #{userId}
     </update>
+
+    <select id="selectUsersByGroupId" resultType="com.example.java_chatroom.model.User">
+        SELECT u.userId, u.username
+        FROM `user` u
+        JOIN groupusers gu ON u.userId = gu.userId
+        WHERE gu.groupId = #{groupId}
+    </select>
 </mapper>

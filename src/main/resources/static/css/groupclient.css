@@ -1,0 +1,220 @@
+/* 主题色 */
+:root {
+    --primary-color: #007bff;
+    --primary-hover-color: #0056b3;
+    --background-color: #f8f9fa;
+    --left-panel-bg: #e9ecef;
+    --right-panel-bg: #f1f3f5;
+    --text-color: #333;
+    --border-color: #dee2e6;
+    --selected-bg: #dde8f5;
+    --me-bubble-bg: #cce5ff;
+    --them-bubble-bg: #ffffff; /* 让他人气泡为白色，对比更清晰 */
+}
+
+/* 基础布局 */
+.client-container .main {
+    display: flex;
+    /* 继承自 client.css 的 z-index 可能会导致问题，在这里重置 */
+    z-index: auto;
+}
+
+.main .left {
+    width: 220px;
+    background-color: var(--left-panel-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.main .center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main .right-panel {
+    width: 200px;
+    padding: 15px;
+    background-color: var(--right-panel-bg);
+    border-left: 1px solid var(--border-color);
+    overflow-y: auto;
+}
+
+/* 左侧面板 */
+.main .left .user-info-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    padding: 0 10px 0 15px;
+    color: white;
+}
+.main .left .user {
+    padding: 15px 0;
+    font-size: 1.1em;
+    font-weight: bold;
+    flex-grow: 1;
+}
+#back-to-client-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 10px;
+    border-radius: 50%;
+}
+#back-to-client-btn:hover {
+    background-color: var(--primary-hover-color);
+}
+.group-management {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+#group-list {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+#group-list li:hover {
+    background-color: #e2e6ea;
+    cursor: pointer;
+}
+#group-list li.selected {
+    background-color: var(--selected-bg);
+    border-right: 3px solid var(--primary-color);
+}
+
+/* 通用按钮和输入框 */
+button, input[type="text"] {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    margin: 2px; /* 增加一点间距 */
+}
+button {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+button:hover {
+    background-color: var(--primary-hover-color);
+}
+button[id$="-cancel-btn"] {
+    background-color: #6c757d;
+}
+button[id$="-cancel-btn"]:hover {
+    background-color: #5a6268;
+}
+
+input[type="text"] {
+    width: calc(100% - 26px);
+}
+input[type="text"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+.group-management button,
+.group-management div button,
+#add-member-form button {
+    width: auto; /* 让按钮宽度自适应内容 */
+    flex-grow: 1; /* 在flex容器中平分宽度 */
+}
+.group-management div, #add-member-form {
+    display: flex;
+}
+
+/* 中间聊天区 */
+.main .center .title {
+    display: flex; /* 使用flex布局让按钮靠右 */
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    font-size: 1.2em;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #fff;
+}
+.main .center .message-show {
+    flex-grow: 1;
+    background-color: var(--background-color);
+    padding: 20px;
+    overflow-y: auto;
+}
+.main .center .message-input-container {
+    padding: 15px;
+    background-color: #fff;
+    border-top: 1px solid var(--border-color);
+}
+.main .center .ctrl {
+    text-align: right; /* 让发送按钮靠右 */
+    margin-top: 10px;
+}
+.main .center .ctrl button {
+    width: 100px;
+}
+
+/* 聊天气泡修正 */
+.message-left, .message-right {
+    display: flex;
+    margin-bottom: 15px;
+    align-items: flex-start; /* 垂直对齐 */
+}
+.message-right {
+    justify-content: flex-end; /* 自己的消息靠右 */
+}
+.message-container {
+    max-width: 70%; /* 限制气泡最大宽度 */
+    display: flex;
+    flex-direction: column;
+}
+.message-right .message-container {
+    align-items: flex-end; /* 让自己的气泡内容也靠右 */
+}
+.message-sender {
+    font-size: 0.8em;
+    font-weight: bold;
+    margin: 0 8px 5px 8px;
+    color: #6c757d;
+}
+.message-bubble {
+    padding: 10px 15px;
+    border-radius: 18px;
+    background-color: var(--them-bubble-bg);
+    word-wrap: break-word; /* 自动换行 */
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    display: inline-block; /* 关键：让气泡宽度自适应内容 */
+    text-align: left; /* 保证文字左对齐 */
+}
+.message-left .message-bubble {
+    border-top-left-radius: 5px;
+}
+.message-right .message-bubble {
+    background-color: var(--me-bubble-bg);
+    border-top-right-radius: 5px;
+    color: #004085;
+}
+.message-right .message-sender {
+    display: none; /* 自己发的消息不显示名字 */
+}
+
+/* 右侧成员列表 */
+.main .right-panel h5 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.1em;
+}
+.main .right-panel ul {
+    list-style: none;
+    padding-left: 0;
+}
+.main .right-panel li {
+    padding: 8px 5px;
+    border-bottom: 1px solid #f8f9fa;
+}

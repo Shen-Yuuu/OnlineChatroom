@@ -21,6 +21,16 @@
     </insert>
 
     <insert id="addMessageSessionUser">
-        insert into message_session_user values(null, #{sessionId}, #{userId})
+        insert into message_session_user(sessionId, userId)
+        values(#{sessionId}, #{userId})
     </insert>
+
+    <select id="findSessionByUserIds" resultType="java.lang.Integer">
+        select sessionId
+        from message_session_user
+        where userId in (#{userId1}, #{userId2})
+        group by sessionId
+        having count(distinct userId) = 2
+        limit 1
+    </select>
 </mapper>

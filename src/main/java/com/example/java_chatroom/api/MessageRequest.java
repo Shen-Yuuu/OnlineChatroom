@@ -4,6 +4,7 @@ package com.example.java_chatroom.api;
 public class MessageRequest {
     private String type = "message";
     private int sessionId;
+    private int groupId;  // 新增字段
     private String content;
 
     public String getType() {
@@ -29,4 +30,9 @@ public class MessageRequest {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public int getGroupId() { return groupId; }
+
+    public void setGroupId(int groupId) { this.groupId = groupId; }
+
 }
