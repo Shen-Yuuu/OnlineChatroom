@@ -36,9 +36,10 @@ public interface FriendMapper {
     /**
      * 获取两个用户之间的共有会话 ID 列表
      */
-    @Select("SELECT sessionId FROM message_session_user WHERE userId = #{userId1} INTERSECT SELECT sessionId FROM message_session_user WHERE userId = #{userId2}")
+    @Select("SELECT DISTINCT msu1.sessionId FROM message_session_user msu1 " +
+            "INNER JOIN message_session_user msu2 ON msu1.sessionId = msu2.sessionId " +
+            "WHERE msu1.userId = #{userId1} AND msu2.userId = #{userId2}")
     List<Integer> getCommonSessionIds(@Param("userId1") int userId1, @Param("userId2") int userId2);
-
     /**
      * 删除指定会话中涉及的两个用户的记录（message_session_user 表）
      */
