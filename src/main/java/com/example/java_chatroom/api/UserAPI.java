@@ -3,19 +3,21 @@ package com.example.java_chatroom.api;
 import com.example.java_chatroom.model.User;
 import com.example.java_chatroom.model.UserMapper;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class UserAPI {
     @Resource
     UserMapper userMapper;
+
 
     @PostMapping("/login")
     @ResponseBody
@@ -75,5 +77,54 @@ public class UserAPI {
         user.setPassword("");
         return user;
     }
+
+    @GetMapping("/user/find")
+    public ResponseEntity<Object> findUser(@RequestParam int userId) {
+        User user = userMapper.findUserById(userId);
+        if (user == null) {
+            return new ResponseEntity<>("用户不存在", HttpStatus.NOT_FOUND);
+        }
+        // 只返回不敏感的信息
+        Map<String, Object> result = new HashMap<>();
+        result.put("userId", user.getUserId());
+        result.put("username", user.getUsername());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/updateUser")
+    @ResponseBody
+    public Object updateUser(@RequestBody User submitData) {
+        int i = userMapper.updateById(submitData);
+        return i;
+    }
+
+    @GetMapping("/userInfo1")
+    @ResponseBody
+    public Object getUserInfo1(HttpServletRequest req) {
+        // 1. 先从请求中获取到会话
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            // 会话不存在, 用户尚未登录. 此时返回一个空的对象即可.
+            System.out.println("[getUserInfo] 当前获取不到 session 对象!");
+            return new User();
+        }
+        // 2. 从会话中获取到之前保存的用户对象.
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            System.out.println("[getUserInfo] 当前获取不到 user 对象!");
+            return new User();
+        }
+        return user;
+//        User test = new User();
+//        test.setUserId(5);
+//        test.setDescription("uienviuev");
+//        test.setGender(1);
+//        test.setPassword("787877");
+//        test.setUsername("test");
+//        return test;
+    }
 }
+
+
+
 
