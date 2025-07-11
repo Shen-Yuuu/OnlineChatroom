@@ -13,7 +13,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class WebSocketAPI extends TextWebSocketHandler {
@@ -27,6 +29,26 @@ public class WebSocketAPI extends TextWebSocketHandler {
     private MessageMapper messageMapper;
 
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    public void sendRecallNotification(long messageId, int sessionId) throws IOException {
+        // 1. 构造响应 paylooad
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("type", "recall");
+        payload.put("messageId", messageId);
+        payload.put("sessionId", sessionId);
+        String respJson = objectMapper.writeValueAsString(payload);
+
+        // 2. 获取会话中的所有用户
+        List<Friend> users = messageSessionMapper.getAllUsersInSession(sessionId);
+
+        // 3. 向所有在线用户广播
+        for (Friend user : users) {
+            WebSocketSession webSocketSession = onlineUserManager.getSession(user.getFriendId());
+            if (webSocketSession != null) {
+                webSocketSession.sendMessage(new TextMessage(respJson));
+            }
+        }
+    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -68,6 +90,20 @@ public class WebSocketAPI extends TextWebSocketHandler {
         resp.setFromName(fromUser.getUsername());
         resp.setSessionId(req.getSessionId());
         resp.setContent(req.getContent());
+
+        // 4. 转发的消息, 还需要放到数据库里. 后续用户如果下线之后, 重新上线, 还可以通过历史消息的方式拿到之前的消息.
+        //    需要往 message 表中写入一条记录.
+        //    调整代码顺序, 先插入数据库, 再进行转发. 此时 id 才能被获取到.
+        Message message = new Message();
+        message.setFromId(fromUser.getUserId());
+        message.setSessionId(req.getSessionId());
+        message.setContent(req.getContent());
+        message.setCreateTime(new Date());
+        message.setStatus(0);
+        messageMapper.insert1(message);
+
+        // 把数据库生成的 messageId, set 到 resp 中
+        resp.setMessageId(message.getMessageId());
         // 把这个 java 对象转成 json 格式字符串
         String respJson = objectMapper.writeValueAsString(resp);
         System.out.println("[transferMessage] respJson: " + respJson);
@@ -95,15 +131,6 @@ public class WebSocketAPI extends TextWebSocketHandler {
             }
             webSocketSession.sendMessage(new TextMessage(respJson));
         }
-
-        // 4. 转发的消息, 还需要放到数据库里. 后续用户如果下线之后, 重新上线, 还可以通过历史消息的方式拿到之前的消息.
-        //    需要往 message 表中写入一条记录.
-        Message message = new Message();
-        message.setFromId(fromUser.getUserId());
-        message.setSessionId(req.getSessionId());
-        message.setContent(req.getContent());
-        message.setCreateTime(new Date());
-        messageMapper.insert(message);
     }
 
     @Override

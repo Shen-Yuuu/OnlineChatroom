@@ -2,6 +2,17 @@
 // 这里实现标签页的切换
 ////////////////////////////////////////////
 
+// 在文件顶部添加全局配置
+$.ajaxSetup({
+    xhrFields: {
+        withCredentials: true  // 确保所有AJAX请求都发送Cookie
+    },
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest'  // 标识为AJAX请求
+    }
+});
+
+
 function initSwitchTab() {
     // 1. 先获取到相关的元素(标签页的按钮, 会话列表, 好友���表)
     let tabSession = document.querySelector('.tab .tab-session');
@@ -55,7 +66,10 @@ websocket.onmessage = function(e) {
     if (resp.type == 'message') {
         // 处理消息响应
         handleMessage(resp);
-    } else {
+    } else if (resp.type == 'recall') {
+        handleRecallMessage(resp);
+    }
+    else {
         // resp 的 type 出错!
         console.log("resp.type 不符合要求!");
     }
@@ -69,10 +83,22 @@ websocket.onerror = function() {
     console.log("websocket 连接异常!");
 }
 
+function handleRecallMessage(resp) {
+    updateMessageToRecalled(resp.messageId);
+    let sessionLi = findSessionLi(resp.sessionId);
+    if (sessionLi) {
+        // 刷新会话列表来更新预览
+        getSessionList();
+    }
+}
+
 function handleMessage(resp) {
     // 把客户端收到的消息, 给展示出来. 
     // 展示到对应的会话预览区域, 以及右侧消息列表中. 
-
+    if (resp.type == 'recall') {
+        updateMessageToRecalled(resp.messageId);
+        return;
+    }
     // 1. 根据响应中的 sessionId 获取到当前会话对应的 li 标签. 
     //    如果 li 标签不存在, 则创建一个新的
     let curSessionLi = findSessionLi(resp.sessionId);
@@ -363,23 +389,125 @@ function getHistoryMessage(sessionId) {
 }
 
 function addMessage(messageShowDiv, message) {
+    console.log("添加消息:", message);
+    console.log("当前用户:", document.querySelector('.left .user').innerHTML);
+    console.log("完整消息对象:", JSON.stringify(message));
+
     // 使用这个 div 表示一条消息
     let messageDiv = document.createElement('div');
-    // 此处需要针对当前消息是不是用户自己发的, 决定是靠左还是靠���.
+    // 此处需要针对当前消息是不是用户自己发的, 决定是靠左还是靠右
     let selfUsername = document.querySelector('.left .user').innerHTML;
+
     if (selfUsername == message.fromName) {
         // 消息是自己发的. 靠右
         messageDiv.className = 'message message-right';
+        console.log("这是自己的消息");
     } else {
         // 消息是别人发的. 靠左
         messageDiv.className = 'message message-left';
+        console.log("这是别人的消息");
     }
-    messageDiv.innerHTML = '<div class="box">' 
+
+    // 检查消息是否已撤回
+    if (message.status == 1) {
+        // 已撤回的消息
+        messageDiv.innerHTML = '<div class="box recalled-message">'
+        + '<h4>' + message.fromName + '</h4>'
+        + '<p class="recalled-text">消息已撤回</p>'
+        + '</div>';
+    } else {
+        // 正常消息
+        let recallButton = '';
+        // 如果是自己发的消息，添加撤回按钮
+        if (selfUsername == message.fromName) {
+            let msgId = message.messageId || message.id;
+            if (msgId) {
+                recallButton = '<button class="recall-btn" onclick="recallMessage(' + msgId + ')">撤回</button>';
+                console.log("添加了撤回按钮，消息ID:", msgId);
+            } else {
+                console.log("消息对象中没有有效的ID字段:", message);
+            }
+        }
+
+        messageDiv.innerHTML = '<div class="box">'
         + '<h4>' + message.fromName + '</h4>'
         + '<p>' + message.content + '</p>'
+        + recallButton
         + '</div>';
+    }
+
+    messageDiv.setAttribute('data-message-id', message.id);
     messageShowDiv.appendChild(messageDiv);
 }
+
+
+// 撤回消息函数
+function recallMessage(messageId) {
+    console.log("尝试撤回消息，ID:", messageId);
+
+    if (!confirm('确定要撤回这条消息吗？')) {
+        return;
+    }
+
+    // 获取当前用户ID
+    const userId = document.querySelector('.main .left .user').getAttribute('user-id');
+
+    $.ajax({
+        type: 'POST',
+        url: '/message/recall/' + messageId,
+        success: function(response) {
+            if (response.code == 200) {
+                updateMessageToRecalled(messageId);
+                console.log("撤回成功");
+            } else {
+                alert(response.message || "撤回失败");
+            }
+        },
+        error: function(xhr) {
+            console.error("撤回请求失败:", xhr.status, xhr.responseText);
+            if (xhr.status === 401) {
+                alert('登录已过期，请重新登录');
+                window.location.href = "/login.html";
+            } else {
+                alert('撤回失败：' + (xhr.responseText || '服务器错误'));
+            }
+        }
+    });
+}
+
+// 更新消息为已撤回状态
+function updateMessageToRecalled(messageId) {
+    let messageDiv = document.querySelector('[data-message-id="' + messageId + '"]');
+    if (messageDiv) {
+        let box = messageDiv.querySelector('.box');
+        let fromName = box.querySelector('h4').innerHTML;
+
+        box.innerHTML = '<h4>' + fromName + '</h4>'
+        + '<p class="recalled-text">消息已撤回</p>';
+        box.classList.add('recalled-message');
+    }
+}
+
+// 定期发送心跳请求，保持会话活跃
+function startSessionHeartbeat() {
+    setInterval(function() {
+        $.ajax({
+            type: 'GET',
+            url: '/user/heartbeat',
+            success: function(response) {
+                console.log("会话保持成功");
+            },
+            error: function() {
+                console.warn("会话可能已过期");
+            }
+        });
+    }, 5 * 60 * 1000); // 每5分钟发送一次
+}
+
+// 在页面加载完成后启动心跳
+$(document).ready(function() {
+    startSessionHeartbeat();
+});
 
 // 把 messageShowDiv 里的内容滚动到底部. 
 function scrollBottom(elem) {

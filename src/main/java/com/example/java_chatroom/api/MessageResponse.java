@@ -7,6 +7,15 @@ public class MessageResponse {
     private String fromName;
     private int sessionId;
     private String content;
+    private long messageId;
+
+    public long getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(long messageId) {
+        this.messageId = messageId;
+    }
 
     public String getType() {
         return type;

@@ -69,6 +69,9 @@ CREATE TABLE `message` (
   KEY `idx_session_time` (`sessionId`,`createTime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 为 message 表添加 status 字段
+ALTER TABLE `message` ADD COLUMN `status` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '消息状态: 0=正常, 1=已撤回';
+
 -- ----------------------------
 -- Records of user
 -- ----------------------------

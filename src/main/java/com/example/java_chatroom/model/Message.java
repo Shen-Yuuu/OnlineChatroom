@@ -10,9 +10,18 @@ public class Message {
     private int sessionId;
     private int fromId;
     private String fromName;
+    private Integer status;
 
     public long getMessageId() {
         return messageId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public void setMessageId(long messageId) {

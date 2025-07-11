@@ -14,12 +14,7 @@ public class OnlineUserManager {
 
     // 1) 用户上线, 给这个哈希表中插入键值对
     public void online(int userId, WebSocketSession session) {
-        if (sessions.get(userId) != null) {
-            // 此时说明用户已经在线了, 就登录失败, 不会记录这个映射关系.
-            // 不记录这个映射关系, 后续就收不到任何消息 (毕竟, 咱们此处是通过映射关系来实现消息转发的)
-            System.out.println("[" + userId + "] 已经被登录了, 登录失败!");
-            return;
-        }
+        // 不论用户是否在线, 都直接覆盖. 以最新的 session 为准
         sessions.put(userId, session);
         System.out.println("[" + userId + "] 上线!");
     }

@@ -379,7 +379,7 @@
 
 .delete-friend-btn:hover {
     background-color: #d32f2f;
-
+}
 .add-friend-container {
     padding: 10px;
     text-align: center;
@@ -419,4 +419,37 @@
 .hidden-item {
     display: none;
 
+}
+
+/* 撤回按钮样式 */
+.recall-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    margin-left: 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.message:hover .recall-btn {
+    opacity: 1;
+}
+
+.recall-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* 已撤回消息样式 */
+.recalled-message {
+    background-color: #f5f5f5 !important;
+}
+
+.recalled-text {
+    color: #888;
+    font-style: italic;
+    font-size: 14px;
 }

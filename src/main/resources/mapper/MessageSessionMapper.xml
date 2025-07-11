@@ -2,16 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.java_chatroom.model.MessageSessionMapper">
     <select id="getSessionIdsByUserId" resultType="java.lang.Integer">
-        select sessionId from message_session
-        where sessionId in
-        (select sessionId from message_session_user where userId = #{userId})
-        order by createTime desc
+        select sessionId from message_session_user where userId = #{userId}
     </select>
 
     <select id="getFriendsBySessionId" resultType="com.example.java_chatroom.model.Friend">
-        select userId as friendId, username as friendName from user
-        where userId in
-        (select userId from message_session_user where sessionId = #{sessionId} and userId != #{selfUserId})
+        select u.userId as friendId, u.username as friendName from user u join message_session_user msu
+        on u.userId = msu.userId
+        where msu.sessionId = #{sessionId} and msu.userId != #{userId}
+    </select>
+    <select id="getAllUsersInSession" resultType="com.example.java_chatroom.model.Friend">
+        select u.userId as friendId, u.username as friendName from user u join message_session_user msu
+        on u.userId = msu.userId
+        where msu.sessionId = #{sessionId}
     </select>
     
     <insert id="addMessageSession" useGeneratedKeys="true" keyProperty="sessionId">
