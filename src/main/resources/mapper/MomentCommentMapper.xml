@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.java_chatroom.model.MomentCommentMapper">
+
+    <insert id="insertComment" parameterType="com.example.java_chatroom.model.MomentComment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO moment_comment (moment_id, user_id, content, create_time)
+        VALUES (#{momentId}, #{userId}, #{content}, NOW())
+    </insert>
+
+    <select id="selectCommentsByMomentId" resultType="com.example.java_chatroom.model.MomentComment">
+        SELECT mc.id, mc.moment_id AS momentId, mc.user_id AS userId, mc.content, mc.create_time AS createTime, u.username
+        FROM moment_comment mc
+                 JOIN user u ON mc.user_id = u.userId
+        WHERE mc.moment_id = #{momentId}
+        ORDER BY mc.create_time ASC
+    </select>
+
+    <delete id="deleteComment">
+        DELETE FROM moment_comment WHERE id = #{id} AND user_id = #{userId}
+    </delete>
+
+    <!-- 查询单个评论 -->
+    <select id="selectById" resultType="com.example.java_chatroom.model.MomentComment">
+        SELECT id, moment_id AS momentId, user_id AS userId, content, create_time AS createTime
+        FROM moment_comment
+        WHERE id = #{id}
+    </select>
+
+</mapper>

@@ -210,7 +210,22 @@ function getFriendList() {
                 // 此处把 friendId 也记录下来, 以备后用. 
                 // 把 friendId 作为一个 html 的自定义属性, 加到 li 标签上就行了. 
                 li.setAttribute('friend-id', friend.friendId);
+                li.innerHTML = `                    <h4>${friend.friendName}</h4>
+                    <button class="delete-friend-btn">删除好友</button>
+                `;
                 friendListUL.appendChild(li);
+
+                // 注册点击好友的事件
+                li.querySelector('h4').onclick = function() {
+                    clickFriend(friend);
+                };
+
+                // 注册删除按钮点击事件
+                li.querySelector('.delete-friend-btn').onclick = function() {
+                    if (confirm("确定要删除该好友吗？")) {
+                        deleteFriend(friend.friendId);
+                    }
+                };
 
                 // 每个 li 标签, 就对应界面上的一个好友的选项. 给这个 li 加上点击事件的处理. 
                 li.onclick = function() {
@@ -464,6 +479,17 @@ $(function() {
         }
     });
 
+    $('#userinfo-link').on('click', function() {
+        const sessionId = $(this).data('sessionId');
+        if (sessionId) {
+            // 在新窗口打开聊天记录页面
+            window.open('userinfo.html?sessionId=' + sessionId, '_blank');
+        } else {
+            // 如果没有sessionId，仍然打开聊天记录页面
+            window.open('userinfo.html', '_blank');
+        }
+    });
+
     // 用于存储搜索到的好友ID
     let searchedFriendId = null;
 
@@ -592,4 +618,29 @@ $(function() {
 
 
 });
+
+function deleteFriend(friendId) {
+    $.ajax({
+        url: '/friend/delete',
+        type: 'POST',
+        data: {
+            friendId: friendId
+        },
+        success: function(response) {
+            if (response.success) {
+                alert(response.message || '删除成功');
+
+                // ✅ 删除成功后刷新好友列表和会话列表
+                getFriendList();     // 刷新好友列表
+                getSessionList();    // 刷新会话列表
+            } else {
+                alert('删除失败: ' + response.message);
+                console.log(response.message);
+            }
+        },
+        error: function(xhr) {
+            alert('请求失败: ' + (xhr.responseText || '网络错误'));
+        }
+    });
+}
 
