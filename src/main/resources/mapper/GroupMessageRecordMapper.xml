@@ -10,10 +10,21 @@
 
     <!-- 根据群组ID获取历史消息 -->
     <select id="selectByGroupId" resultType="com.example.java_chatroom.model.GroupMessageRecord">
-        SELECT recordId, groupId, userId, messageContent
-        FROM groupmessagerecord
-        WHERE groupId = #{groupId}
-        ORDER BY recordId ASC
+        SELECT
+            gmr.recordId,
+            gmr.groupId,
+            gmr.userId,
+            gmr.messageContent,
+            gmr.createTime,
+            u.username as fromName
+        FROM
+            groupmessagerecord gmr
+        JOIN
+            user u ON gmr.userId = u.userId
+        WHERE
+            gmr.groupId = #{groupId}
+        ORDER BY
+            gmr.recordId ASC
     </select>
 
 </mapper>

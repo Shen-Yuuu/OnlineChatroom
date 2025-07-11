@@ -2,7 +2,7 @@
 
 package com.example.java_chatroom.api;
 
-import com.example.java_chatroom.component.OnlineUserManager;
+import com.example.java_chatroom.component.MultiSessionOnlineUserManager;
 import com.example.java_chatroom.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,7 @@ import java.util.List;
 public class GroupWebSocketAPI extends TextWebSocketHandler {
 
     @Autowired
-    private OnlineUserManager onlineUserManager;
+    private MultiSessionOnlineUserManager onlineUserManager;
 
     @Autowired
     private GroupMapper groupMapper;
@@ -67,6 +67,13 @@ public class GroupWebSocketAPI extends TextWebSocketHandler {
 
     // 群组消息转发逻辑
     private void transferGroupMessage(User fromUser, MessageRequest req) throws IOException {
+        // [安全检查] 验证用户是否在群聊中
+        GroupUsers memberCheck = groupUsersMapper.findByGroupIdAndUserId(req.getGroupId(), fromUser.getUserId());
+        if (memberCheck == null) {
+            System.out.println("[GroupWebSocketAPI] 安全警告: 用户 " + fromUser.getUserId() + " 尝试向未加入的群聊 " + req.getGroupId() + " 发送消息");
+            return;
+        }
+
         // 构造响应对象
         MessageResponse resp = new MessageResponse();
         resp.setType("groupMessage");
@@ -82,9 +89,15 @@ public class GroupWebSocketAPI extends TextWebSocketHandler {
 
         // 广播给所有在线成员
         for (GroupUsers member : members) {
-            WebSocketSession targetSession = onlineUserManager.getSession(member.getUserId());
-            if (targetSession != null && targetSession.isOpen()) {
-                targetSession.sendMessage(new TextMessage(respJson));
+            List<WebSocketSession> targetSessions = onlineUserManager.getSessions(member.getUserId());
+            if (targetSessions == null) {
+                // 用户不在线
+                continue;
+            }
+            for (WebSocketSession targetSession : targetSessions) {
+                if (targetSession.isOpen()) {
+                    targetSession.sendMessage(new TextMessage(respJson));
+                }
             }
         }
 

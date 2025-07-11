@@ -10,6 +10,6 @@ public interface GroupMapper {
     List<Group> getGroupsByUserId(int userId);
 
     void insert(Group group);
-
-    Object selectByUserId(int userId);
+    Group selectById(int groupId);
+    List<Group> selectByUserId(int userId);
 }

@@ -279,6 +279,10 @@ function getSessionList() {
 
 getSessionList();
 
+document.getElementById('goto-group-chat-btn').onclick = function() {
+    location.assign('groupclient.html');
+};
+
 function clickSession(currentLi) {
     // 1. 设置高亮
     let allLis = document.querySelectorAll('#session-list>li');

@@ -6,6 +6,12 @@
         VALUES (#{groupName}, #{ownerId})
     </insert>
 
+    <select id="selectById" resultType="com.example.java_chatroom.model.Group">
+        SELECT groupId, groupName, ownerId
+        FROM `group`
+        WHERE groupId = #{groupId}
+    </select>
+
     <select id="selectByUserId" resultType="com.example.java_chatroom.model.Group">
         SELECT g.groupId, g.groupName, g.ownerId
         FROM `group` g

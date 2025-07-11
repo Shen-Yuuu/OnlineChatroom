@@ -91,6 +91,19 @@ public class UserAPI {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/user/findByName")
+    public ResponseEntity<Object> findUserByName(@RequestParam String username) {
+        User user = userMapper.selectByName(username);
+        if (user == null) {
+            return new ResponseEntity<>("用户不存在", HttpStatus.NOT_FOUND);
+        }
+        // 只返回不敏感的信息
+        Map<String, Object> result = new HashMap<>();
+        result.put("userId", user.getUserId());
+        result.put("username", user.getUsername());
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/updateUser")
     @ResponseBody
     public Object updateUser(@RequestBody User submitData) {

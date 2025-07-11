@@ -13,4 +13,10 @@
         FROM groupusers
         WHERE groupId = #{groupId}
     </select>
+
+    <select id="findByGroupIdAndUserId" resultType="com.example.java_chatroom.model.GroupUsers">
+        SELECT groupUserId, groupId, userId
+        FROM groupusers
+        WHERE groupId = #{groupId} AND userId = #{userId}
+    </select>
 </mapper>

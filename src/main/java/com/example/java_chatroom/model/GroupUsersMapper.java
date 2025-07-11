@@ -1,6 +1,7 @@
 package com.example.java_chatroom.model;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,4 +13,5 @@ public interface GroupUsersMapper {
     void insert(GroupUsers gu);
 
     List<GroupUsers> selectByGroupId(int groupId);
+    GroupUsers findByGroupIdAndUserId(@Param("groupId") int groupId, @Param("userId") int userId);
 }

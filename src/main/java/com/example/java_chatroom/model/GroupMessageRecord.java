@@ -6,6 +6,7 @@ public class GroupMessageRecord {
     private int recordId;
     private int groupId;
     private int userId;
+    private String fromName; // 新增字段
     private String messageContent;
 
     private Date createTime;
@@ -32,6 +33,14 @@ public class GroupMessageRecord {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public String getFromName() {
+        return fromName;
+    }
+
+    public void setFromName(String fromName) {
+        this.fromName = fromName;
     }
 
     public int getRecordId() {
