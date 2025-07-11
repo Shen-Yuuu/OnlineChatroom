@@ -59,11 +59,11 @@ CREATE TABLE `message_session_user`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `moment`;
 CREATE TABLE `moment`  (
-                           `id` bigint NOT NULL AUTO_INCREMENT,
-                           `user_id` bigint NOT NULL,
-                           `content` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
-                           `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
-                           PRIMARY KEY (`id`) USING BTREE
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `content` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
@@ -72,6 +72,85 @@ CREATE TABLE `moment`  (
 
 -- ----------------------------
 -- Table structure for moment_comment
+-- ----------------------------
+DROP TABLE IF EXISTS `moment_comment`;
+CREATE TABLE `moment_comment`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `moment_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  `content` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of moment_comment
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for moment_like
+-- ----------------------------
+DROP TABLE IF EXISTS `moment_like`;
+CREATE TABLE `moment_like`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `moment_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of moment_like
+-- ----------------------------
+
+-- ----------------------------
+-- Records of moment
+-- ----------------------------
+
+-- ----------------------------
+
+-- Table structure for group
+-- ----------------------------
+DROP TABLE IF EXISTS `group`;
+CREATE TABLE `group`  (
+                          `groupId` int NOT NULL AUTO_INCREMENT,
+                          `groupName` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT '未命名群',
+                          `ownerId` int NULL DEFAULT NULL,
+                          `createTime` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+                          `groupStatus` int NULL DEFAULT NULL,
+                          PRIMARY KEY (`groupId`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for groupmessagerecord
+-- ----------------------------
+DROP TABLE IF EXISTS `groupmessagerecord`;
+CREATE TABLE `groupmessagerecord`  (
+                                       `recordId` int NOT NULL AUTO_INCREMENT COMMENT '群聊记录ID，主键',
+                                       `groupId` int NOT NULL COMMENT '群号',
+                                       `userId` int NOT NULL COMMENT '发消息的用户ID',
+                                       `messageContent` varchar(2048) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '消息内容',
+                                       `createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '消息创建时间',
+                                       PRIMARY KEY (`recordId`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '群聊记录表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for groupusers
+-- ----------------------------
+DROP TABLE IF EXISTS `groupusers`;
+CREATE TABLE `groupusers`  (
+                               `groupUserId` bigint NOT NULL AUTO_INCREMENT COMMENT '主键索引',
+                               `groupId` int NOT NULL COMMENT '群号',
+                               `userId` int NOT NULL COMMENT '用户号',
+                               PRIMARY KEY (`groupUserId`) USING BTREE,
+                               UNIQUE INDEX `uk_group_user`(`groupId` ASC, `userId` ASC) USING BTREE COMMENT '确保群和用户的唯一性'
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '群与用户关联表' ROW_FORMAT = Dynamic;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- ----------------------------
+-- Records of user
+
 -- ----------------------------
 DROP TABLE IF EXISTS `moment_comment`;
 CREATE TABLE `moment_comment`  (
@@ -197,3 +276,6 @@ INSERT INTO `groupusers` VALUES (4, 3, 1);
 INSERT INTO `groupusers` VALUES (5, 3, 2);
 INSERT INTO `groupusers` VALUES (6, 4, 2);
 INSERT INTO `groupusers` VALUES (7, 4, 4);
+
+ALTER TABLE message_session_user ADD INDEX idx_sessionId (sessionId)
+

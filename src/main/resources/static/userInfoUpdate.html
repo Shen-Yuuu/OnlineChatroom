@@ -301,14 +301,13 @@
 
                     <div class="form-group">
                         <label for="userpassword">密码</label>
-                        <div class="input-icon">👤</div>
+                        <div class="input-icon">🔒</div>
                         <input
                                 type="text"
                                 id="userpassword"
                                 class="form-input"
                                 placeholder="请输入密码"
                                 v-model="user.password"
-                                required
                         >
                     </div>
 
@@ -405,7 +404,6 @@
 
                 // 模拟API响应
                 setTimeout(() => {
-
                     const mockUserData = {
                         userId: 0,
                         username: "",
@@ -423,20 +421,14 @@
                             mockUserData.gender = response.data.gender
                             mockUserData.description = response.data.description
                             mockUserData.password = response.data.password
-
                         }
                         this.user = {
                             ...mockUserData,
                             // 将数值型gender转换为字符串型
                             gender: mockUserData.gender.toString()
                         };
-
                         this.loading = false;
-
                     })
-
-
-
                 }, 100);
             },
 
@@ -448,12 +440,6 @@
                 // 简单验证
                 if (!this.user.username.trim()) {
                     this.showError("用户名不能为空");
-                    this.submitting = false;
-                    return;
-                }
-
-                if (!this.user.password.trim()) {
-                    this.showError("密码不能为空");
                     this.submitting = false;
                     return;
                 }
@@ -479,16 +465,23 @@
                             this.submitting = false;
                             this.showSuccess("个人信息更新成功！");
 
-                            // 3秒后跳转回个人信息页
-                            setTimeout(() => {
-                                this.goToProfile();
-                            }, 1000);
+                            // 根据密码是否为空决定跳转页面
+                            if (this.user.password.trim() === "") {
+                                // 密码为空，跳转到userinfo.html
+                                setTimeout(() => {
+                                    this.goToProfile();
+                                }, 1000);
+                            } else {
+                                // 密码不为空，跳转到login.html
+                                setTimeout(() => {
+                                    window.location.href = "login.html";
+                                }, 1000);
+                            }
                         }, 1500);
                     }else{
                         this.showError("个人信息更新失败");
                     }
                 })
-
             },
 
             // 显示成功消息
