@@ -385,21 +385,25 @@
     text-align: center;
 }
 
-#show-search-button {
+#show-search-button, #goto-group-chat-btn {
     width: 100%;
     padding: 8px;
-    background-color: #4CAF50;
+    background-color: #3e86e8;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    margin-bottom: 5px; /* 与下方元素保持间距 */
 }
-#show-search-button:hover {
-    background-color: #45a049;
+
+
+#show-search-button:hover, #goto-group-chat-btn:hover {
+    background-color: #3473c9;
+
 }
 
 .friend-list-header {
-    padding: 10px;
+    padding: 0 20px;
     border-bottom: 1px solid #e0e0e0;
 }
 

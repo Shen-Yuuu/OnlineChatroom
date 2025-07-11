@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.java_chatroom.model.GroupMessageRecordMapper">
+
+    <!-- 插入群消息记录 -->
+    <insert id="insert">
+        INSERT INTO groupmessagerecord (groupId, userId, messageContent)
+        VALUES (#{groupId}, #{userId}, #{messageContent})
+    </insert>
+
+    <!-- 根据群组ID获取历史消息 -->
+    <select id="selectByGroupId" resultType="com.example.java_chatroom.model.GroupMessageRecord">
+        SELECT
+            gmr.recordId,
+            gmr.groupId,
+            gmr.userId,
+            gmr.messageContent,
+            gmr.createTime,
+            u.username as fromName
+        FROM
+            groupmessagerecord gmr
+        JOIN
+            user u ON gmr.userId = u.userId
+        WHERE
+            gmr.groupId = #{groupId}
+        ORDER BY
+            gmr.recordId ASC
+    </select>
+
+</mapper>

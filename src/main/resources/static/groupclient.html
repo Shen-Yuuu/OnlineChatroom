@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>群组聊天</title>
+    <!-- 引入通用样式和新的群聊专属样式 -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/client.css">
+    <link rel="stylesheet" href="css/groupclient.css">
+</head>
+<body>
+    <div class="client-container">
+        <div class="main">
+            <!-- 左侧区域, 显示群组列表 -->
+            <div class="left">
+                <!-- 当前登录用户的用户名和返回按钮 -->
+                <div class="user-info-bar">
+                    <div class="user"></div>
+                    <button id="back-to-client-btn" title="返回私聊" onclick="location.href='client.html'">&larr;</button>
+                </div>
+
+                <!-- 创建群组区域 -->
+                <div class="group-management">
+                    <button id="create-group-show-btn">创建群组</button>
+                    <div id="create-group-form" style="display: none; margin-top: 10px;">
+                        <input type="text" id="group-name-input" placeholder="输入群组名称">
+                        <button id="create-group-submit-btn">确认</button>
+                        <button id="create-group-cancel-btn">取消</button>
+                    </div>
+                </div>
+
+                <!-- 群组列表 -->
+                <ul class="list" id="group-list">
+                    <!-- 动态加载 -->
+                </ul>
+            </div>
+
+            <!-- 中间区域, 显示聊天窗口 -->
+            <div class="center">
+                <!-- 会话标题 -->
+                <div class="title">
+                    <span>请选择一个群组开始聊天</span>
+                    <div id="add-member-area" style="display: none;">
+                        <button id="add-member-show-btn">添加成员</button>
+                    </div>
+                </div>
+                <!-- 消息区 -->
+                <div class="message-show">
+                    <!-- JS 动态添加消息 -->
+                </div>
+                 <!-- 添加成员表单 (初始隐藏) -->
+                 <div id="add-member-form" style="display: none; padding: 10px; background-color: #f0f0f0;">
+                    <input type="text" id="member-name-input" placeholder="输入好友用户名">
+                    <button id="add-member-submit-btn">邀请</button>
+                    <button id="add-member-cancel-btn">取消</button>
+                </div>
+                <!-- 消息编辑框 -->
+                <div class="message-input-container">
+                    <textarea class="message-input"></textarea>
+                    <div class="ctrl">
+                        <button>发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧区域, 显示群成员 -->
+            <div class="right-panel" id="member-list">
+                <h5>群成员</h5>
+                <ul>
+                    <!-- 动态加载 -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="js/groupclient.js"></script>
+</body>
+</html>
