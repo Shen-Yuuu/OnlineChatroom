@@ -43,9 +43,11 @@ public class WebSocketAPI extends TextWebSocketHandler {
 
         // 3. 向所有在线用户广播
         for (Friend user : users) {
-            WebSocketSession webSocketSession = onlineUserManager.getSession(user.getFriendId());
-            if (webSocketSession != null) {
-                webSocketSession.sendMessage(new TextMessage(respJson));
+            List<WebSocketSession> webSocketSessions = onlineUserManager.getSessions(user.getFriendId());
+            if (webSocketSessions != null) {
+                for (WebSocketSession webSocketSession : webSocketSessions) {
+                    webSocketSession.sendMessage(new TextMessage(respJson));
+                }
             }
         }
     }

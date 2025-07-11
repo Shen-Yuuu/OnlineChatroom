@@ -206,7 +206,7 @@ ALTER TABLE message ADD INDEX idx_sessionId (sessionId);
 ALTER TABLE message ADD INDEX idx_fromId (fromId);
 ALTER TABLE message ADD INDEX idx_createTime (createTime);
 ALTER TABLE message_session_user ADD INDEX idx_userId (userId);
-ALTER TABLE message_session_user ADD INDEX idx_sessionId (sessionId)
+ALTER TABLE message_session_user ADD INDEX idx_sessionId (sessionId);
 
 -- ----------------------------
 -- Table structure for group
@@ -280,5 +280,4 @@ INSERT INTO `groupusers` VALUES (5, 3, 2);
 INSERT INTO `groupusers` VALUES (6, 4, 2);
 INSERT INTO `groupusers` VALUES (7, 4, 4);
 
-ALTER TABLE message_session_user ADD INDEX idx_sessionId (sessionId)
 
