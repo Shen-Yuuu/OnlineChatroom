@@ -59,19 +59,29 @@ public class MessageSessionAPI {
     @PostMapping("/session")
     @ResponseBody
     @Transactional
-    public Object addMessageSession(int toUserId, @SessionAttribute("user") User user) {
+    public Object addMessageSession(@RequestParam int toUserId, @SessionAttribute("user") User user) {
         HashMap<String, Integer> resp = new HashMap<>();
-        // 进行数据库的插入操作
-        // 1. 先给 message_session 表里插入记录. 使用这个参数的目的主要是为了能够获取到会话的 sessionId
-        //    换而言之, MessageSession 里的 friends 和 lastMessage 属性此处都用不上.
+
+        // [修复] 改造为 Get Or Create
+        // 1. 先查询是否存在
+        Integer sessionId = messageSessionMapper.findSessionByUserIds(user.getUserId(), toUserId);
+
+        if (sessionId != null) {
+            // 2. 如果存在，直接返回
+            System.out.println("[addMessageSession] 会话已存在! sessionId=" + sessionId);
+            resp.put("sessionId", sessionId);
+            return resp;
+        }
+
+        // 3. 如果不存在，创建新的会话
         MessageSession messageSession = new MessageSession();
         messageSessionMapper.addMessageSession(messageSession);
-        // 2. 给 message_session_user 表插入记录.
+
         MessageSessionUserItem item1 = new MessageSessionUserItem();
         item1.setSessionId(messageSession.getSessionId());
         item1.setUserId(user.getUserId());
         messageSessionMapper.addMessageSessionUser(item1);
-        // 3. 给 message_session_user 表插入记录.
+
         MessageSessionUserItem item2 = new MessageSessionUserItem();
         item2.setSessionId(messageSession.getSessionId());
         item2.setUserId(toUserId);
@@ -81,7 +91,6 @@ public class MessageSessionAPI {
                 + " userId1=" + user.getUserId() + " userId2=" + toUserId);
 
         resp.put("sessionId", messageSession.getSessionId());
-        // 返回的对象是一个普通对象也可以, 或者是一个 Map 也可以, jackson 都能进行处理.
         return resp;
     }
 }

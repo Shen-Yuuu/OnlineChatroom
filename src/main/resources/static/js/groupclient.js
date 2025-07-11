@@ -286,14 +286,16 @@ function initCreateGroup() {
             type: 'post',
             url: 'createGroup?groupName=' + groupName,
             success: function(resp) {
-                if (resp.ok) {
+                // [修复] 后端返回的是 {groupId: xxx} 而不是 {ok: true}
+                if (resp && resp.groupId > 0) {
                     alert("创建成功!");
                     form.style.display = 'none';
                     nameInput.value = '';
                     // 刷新群组列表
                     getGroupList();
                 } else {
-                    alert("创建失败! " + resp.reason);
+                    // [修复] 提示更详细的错误
+                    alert("创建失败! " + (resp.reason || '未能获取到群组ID'));
                 }
             },
             error: function(req, status, err) {
@@ -362,21 +364,21 @@ function initAddMember() {
         $.ajax({
             type: 'post',
             url: '/group/addMember',
-            // POST请求体需要是 JSON 格式
-            contentType: 'application/json;charset=utf-8',
-            data: JSON.stringify({
+            // [修复] 后端使用 @RequestParam, 所以需要发送 form-data 格式, 而不是 json
+            data: {
                 groupId: currentGroupId,
-                userId: userId
-            }),
+                friendId: userId // [修复] 参数名从 userId 改为 friendId
+            },
             success: function(resp) {
-                if (resp.ok) {
+                // [修复] 后端返回的是 {ok: "true"}, 需要正确判断
+                if (resp && resp.ok === "true") {
                     alert("添加成员成功!");
                     form.style.display = 'none';
                     nameInput.value = '';
                     // 刷新成员列表
                     getGroupMembers(currentGroupId);
                 } else {
-                    alert("添加成员失败: " + resp.reason);
+                    alert("添加成员失败: " + (resp.reason || '未知错误'));
                 }
             },
             error: function(req, status, err) {
