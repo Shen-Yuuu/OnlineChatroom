@@ -1,6 +1,47 @@
-create database if not exists java_chatroom charset utf8;
+/*
+ Navicat Premium Data Transfer
 
-use java_chatroom;
+ Source Server         : MySql
+ Source Server Type    : MySQL
+ Source Server Version : 80042
+ Source Host           : localhost:3306
+ Source Schema         : java_chatroom
+
+-- ----------------------------
+-- Table structure for moment
+-- ----------------------------
+DROP TABLE IF EXISTS `moment`;
+CREATE TABLE `moment`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `content` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for moment_comment
+-- ----------------------------
+DROP TABLE IF EXISTS `moment_comment`;
+CREATE TABLE `moment_comment`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `moment_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  `content` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL,
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for moment_like
+-- ----------------------------
+DROP TABLE IF EXISTS `moment_like`;
+CREATE TABLE `moment_like`  (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `moment_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user
