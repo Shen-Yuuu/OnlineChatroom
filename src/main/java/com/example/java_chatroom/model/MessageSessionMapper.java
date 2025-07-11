@@ -16,8 +16,10 @@ public interface MessageSessionMapper {
     // 3. 新增一个会话记录, 返回会话的 id
     //    这样的方法返回值 int 表示的是插入操作影响到几行.
     //    此处获取 sessionId 是通过参数的 messageSession 的 sessionId 属性获取的
-    int addMessageSession(MessageSession messageSession);
+    void addMessageSession(MessageSession messageSession);
 
     // 4. 给 message_session_user 表也新增对应的记录
-    void addMessageSessionUser(MessageSessionUserItem messageSessionUserItem);
+    void addMessageSessionUser(MessageSessionUserItem item);
+
+    Integer findSessionByUserIds(@Param("userId1") int userId1, @Param("userId2") int userId2);
 }

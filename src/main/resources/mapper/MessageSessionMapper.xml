@@ -9,9 +9,12 @@
     </select>
 
     <select id="getFriendsBySessionId" resultType="com.example.java_chatroom.model.Friend">
-        select userId as friendId, username as friendName from user
-        where userId in
-        (select userId from message_session_user where sessionId = #{sessionId} and userId != #{selfUserId})
+        select
+            u.userId as friendId, u.username as friendName
+        from
+            message_session_user msu join user u on msu.userId = u.userId
+        where
+            msu.sessionId = #{sessionId} and msu.userId != #{selfUserId}
     </select>
     
     <insert id="addMessageSession" useGeneratedKeys="true" keyProperty="sessionId">
@@ -19,6 +22,16 @@
     </insert>
 
     <insert id="addMessageSessionUser">
-        insert into message_session_user values(null, #{sessionId}, #{userId})
+        insert into message_session_user(sessionId, userId)
+        values(#{sessionId}, #{userId})
     </insert>
+
+    <select id="findSessionByUserIds" resultType="java.lang.Integer">
+        select sessionId
+        from message_session_user
+        where userId in (#{userId1}, #{userId2})
+        group by sessionId
+        having count(distinct userId) = 2
+        limit 1
+    </select>
 </mapper>
