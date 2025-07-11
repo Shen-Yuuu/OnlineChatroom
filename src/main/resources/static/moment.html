@@ -25,6 +25,9 @@
             padding: 20px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .post-box textarea {
@@ -35,7 +38,6 @@
             font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            margin-bottom: 15px;
             box-sizing: border-box;
         }
 
@@ -53,7 +55,24 @@
         .post-box button:hover {
             background-color: #45a049;
         }
+        .publish-button-container {
+            align-self: flex-end; /* 按钮靠右对齐 */
+        }
 
+        .publish-button-container button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.2s ease;
+        }
+
+        .publish-button-container button:hover {
+            background-color: #45a049;
+        }
         /* 当前用户信息 */
         #current-user {
             font-size: 18px;
@@ -207,10 +226,14 @@
     <div id="current-user">加载中...</div>
 
     <!-- 发布新动态 -->
+    <!-- 发布新动态 -->
     <div class="post-box">
         <textarea id="content" placeholder="分享你此刻的想法..."></textarea>
-        <button onclick="sendMoment()">发布</button>
+        <div class="publish-button-container">
+            <button onclick="sendMoment()">发布</button>
+        </div>
     </div>
+
 
     <!-- 动态列表容器 -->
     <div class="moment-list" id="moment-list">
